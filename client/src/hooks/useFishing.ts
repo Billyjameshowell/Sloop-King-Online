@@ -97,9 +97,9 @@ export function useFishing() {
     
     setIndicatorPosition(newPosition);
     
-    // Continue animation
+    // Always ensure we request the next animation frame
     animationRef.current = requestAnimationFrame(updateIndicator);
-  }, [indicatorPosition, indicatorDirection, indicatorSpeed, isActive]);
+  }, [indicatorDirection, indicatorSpeed, isActive]); // Remove indicatorPosition from deps to prevent re-creation of this function
   
   // Handle catch attempt
   const handleCatchAttempt = useCallback(() => {
