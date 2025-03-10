@@ -92,52 +92,7 @@ export function useGame() {
             setGameState(initialGameState);
             
             // Fetch player stats
-            fetch(`/api/users/${userId}/stats`)
-              .then(res => {
-                if (res.ok) {
-                  return res.json();
-                } else if (res.status === 404) {
-                  // Player stats not found, create them
-                  return apiRequest('POST', `/api/users/${userId}/stats`, {
-                    userId: userId
-                  }).then(newStats => {
-                    console.log("Created new player stats:", newStats);
-                    return newStats;
-                  });
-                } else {
-                  throw new Error('Failed to fetch player stats');
-                }
-              })
-              .then(stats => {
-                setGameState(prevState => {
-                  if (!prevState) return null;
-                  
-                  return {
-                    ...prevState,
-                    player: {
-                      ...prevState.player,
-                      position: { 
-                        x: stats.positionX || 500, 
-                        y: stats.positionY || 500
-                      },
-                      stats: {
-                        fishCaught: stats.fishCaught || 0,
-                        largestFish: stats.largestFish || 0,
-                        rareFinds: stats.rareFinds || 0
-                      }
-                    }
-                  };
-                });
-              })
-              .catch(err => {
-                console.error("Error with player stats:", err);
-                // Fallback to default values
-                setGameState(prevState => {
-                  if (!prevState) return null;
-                  
-                  return prevState;
-                });
-              });
+            // Player stats are now handled by the WebSocket connection
             
             // Fetch player catches
             fetch(`/api/users/${userId}/catches`)

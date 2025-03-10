@@ -44,11 +44,26 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
             // Authenticate the client
             const { userId, username } = data.payload;
             
-            // Get player stats to get position
-            const stats = await storage.getPlayerStats(userId);
+            // Get player stats or create new ones
+            let stats = await storage.getPlayerStats(userId);
+            
             if (!stats) {
-              sendError(ws, "Invalid user ID");
-              return;
+              // The player is new, so initialize stats with default values
+              try {
+                stats = await storage.createPlayerStats({
+                  userId,
+                  fishCaught: 0,
+                  largestFish: 0,
+                  rareFinds: 0,
+                  positionX: 500, // Default starting position
+                  positionY: 500
+                });
+                console.log(`Created new stats for user ${userId}`);
+              } catch (error) {
+                console.error("Failed to create player stats:", error);
+                sendError(ws, "Failed to create player stats");
+                return;
+              }
             }
             
             // Create client

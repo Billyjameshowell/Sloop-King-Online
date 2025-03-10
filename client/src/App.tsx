@@ -12,17 +12,13 @@ function Router() {
   const [userId, setUserId] = useState<number | null>(null);
   
   useEffect(() => {
-    // Check for stored username
+    // Check for stored username and user ID
     const storedUsername = localStorage.getItem("sloopking_username");
-    if (storedUsername) {
-      setUsername(storedUsername);
-      const storedUserId = localStorage.getItem("sloopking_userid");
-      if (storedUserId) {
-        setUserId(parseInt(storedUserId));
-      }
-    } else {
-      // Create a guest username
-      const guestName = `Captain_${Math.floor(Math.random() * 9999)}`;
+    const storedUserId = localStorage.getItem("sloopking_userid");
+    
+    // Create a new user function
+    const createNewUser = () => {
+      const guestName = `Captain_${Math.floor(Math.random() * 1000)}`;
       setUsername(guestName);
       
       // Create a user account
@@ -40,9 +36,38 @@ function Router() {
           setUserId(data.id);
           localStorage.setItem("sloopking_username", guestName);
           localStorage.setItem("sloopking_userid", data.id.toString());
+          console.log(`Created new user: ${guestName} with ID: ${data.id}`);
         }
       })
       .catch(err => console.error("Failed to create guest user:", err));
+    };
+    
+    // Verify user ID if we have both stored values
+    if (storedUsername && storedUserId) {
+      // Set initial values
+      setUsername(storedUsername);
+      const userId = parseInt(storedUserId);
+      
+      // Verify this user exists
+      fetch(`/api/users/${userId}`)
+        .then(res => {
+          if (res.ok) {
+            // User exists, set the ID
+            setUserId(userId);
+          } else {
+            // User doesn't exist, create a new one
+            console.log("Stored user ID not found, creating new user");
+            createNewUser();
+          }
+        })
+        .catch(() => {
+          // Error checking user, create a new one
+          console.log("Error verifying user, creating new user");
+          createNewUser();
+        });
+    } else {
+      // No stored values, create a new user
+      createNewUser();
     }
   }, []);
   
