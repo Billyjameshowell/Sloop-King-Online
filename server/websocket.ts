@@ -26,13 +26,33 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
   // Use a specific path for game WebSockets to avoid conflicts with Vite's WebSocket
   const wss = new WebSocketServer({ 
     server: httpServer,
-    path: '/gamews'
+    path: '/gamews',
+    // Additional options to improve connection reliability
+    perMessageDeflate: false,
+    clientTracking: true,
+    // Lower these values to avoid timeout issues
+    maxPayload: 1024 * 1024, // 1MB
   });
   
   // Store connected clients
   const clients: Map<number, GameClient> = new Map();
   
-  wss.on("connection", (ws) => {
+  console.log('WebSocket server initialized at path: /gamews');
+  
+  // Set up WebSocket server error handling
+  wss.on('error', (error) => {
+    console.error('WebSocket server error:', error);
+  });
+  
+  wss.on("connection", (ws, req) => {
+    console.log(`New WebSocket connection from ${req.socket.remoteAddress}`);
+    
+    // Set up ping/pong to keep connection alive
+    const pingInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.ping();
+      }
+    }, 30000); // Send ping every 30 seconds
     let client: GameClient | null = null;
     
     ws.on("message", async (message) => {
@@ -251,7 +271,12 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
     });
     
     ws.on("close", () => {
+      // Clear ping interval
+      clearInterval(pingInterval);
+      
       if (client) {
+        console.log(`Client disconnected: ${client.username} (ID: ${client.userId})`);
+        
         // Remove client from list
         clients.delete(client.userId);
         
@@ -262,7 +287,15 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
             userId: client.userId
           }
         });
+      } else {
+        console.log("Unauthenticated client disconnected");
       }
+    });
+    
+    // Handle WebSocket errors
+    ws.on("error", (error) => {
+      console.error("WebSocket connection error:", error);
+      clearInterval(pingInterval);
     });
   });
   

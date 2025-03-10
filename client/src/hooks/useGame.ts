@@ -37,10 +37,18 @@ export function useGame() {
     queryClient.fetchQuery({ queryKey: [`/api/users/${userId}/catches`] });
     
     // Initialize WebSocket connection
-    // In Replit, we should use the same hostname and port that the server uses
-    // Use relative URLs with the specific path we set up on the server
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/gamews`;
+    // In Replit, we need to set up the WebSocket URL correctly
+    // We'll use a relative URL to ensure it works in both development and production
+    let wsUrl;
+    if (window.location.hostname === 'localhost') {
+      // If running locally
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${window.location.host}/gamews`;
+    } else {
+      // If running on Replit
+      // This is a workable approach for Replit specifically
+      wsUrl = `wss://${window.location.host}/gamews`;
+    }
     
     console.log('Connecting to WebSocket at:', wsUrl);
     const ws = new WebSocket(wsUrl);
