@@ -82,12 +82,12 @@ export function useFishing() {
     lastTimeRef.current = time;
     
     // Calculate new position
-    const gaugeWidth = 250; // Match fishing gauge width
+    const gaugeWidth = 250; // Match fishing gauge width (full width of the container)
     let newPosition = indicatorPosition + (indicatorDirection * indicatorSpeed * deltaTime / 1000);
     
     // Reverse direction if at edges
-    if (newPosition >= gaugeWidth) {
-      newPosition = gaugeWidth;
+    if (newPosition >= gaugeWidth - 8) { // Subtract indicator width (8px) to keep fully visible
+      newPosition = gaugeWidth - 8;
       setIndicatorDirection(-1);
     } else if (newPosition <= 0) {
       newPosition = 0;

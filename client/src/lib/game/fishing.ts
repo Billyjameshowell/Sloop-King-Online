@@ -5,7 +5,7 @@ export interface FishingParams {
   maxHitPercentage: number; // Maximum size of hit zone as percentage (0-100)
   minSpeed: number; // Minimum speed of indicator (pixels per second)
   maxSpeed: number; // Maximum speed of indicator (pixels per second)
-  gaugeWidth: number; // Width of the fishing gauge in pixels
+  gaugeWidth: number; // Width of the fishing gauge in pixels, should match UI
 }
 
 // Fishing parameters adjusted by fish rarity
