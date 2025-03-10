@@ -71,11 +71,8 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
         
         {/* Moving indicator */}
         <div 
-          className="fish-indicator absolute h-full w-4 bg-white"
-          style={{ 
-            left: `${indicatorPosition}px`,
-            // Remove transition as it can interfere with animation
-          }}
+          className="absolute h-full w-4 bg-white"
+          style={{ left: `${indicatorPosition}px` }}
         ></div>
       </div>
       

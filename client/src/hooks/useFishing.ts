@@ -82,24 +82,25 @@ export function useFishing() {
     lastTimeRef.current = time;
     
     // Calculate new position
-    // The gauge width is 256px (w-64 = 16rem = 256px)
     const gaugeWidth = 256; 
-    let newPosition = indicatorPosition + (indicatorDirection * indicatorSpeed * deltaTime / 1000);
     
-    // Reverse direction if at edges
-    if (newPosition >= gaugeWidth - 10) { // Subtract indicator width (8px) plus some margin
-      newPosition = gaugeWidth - 10;
-      setIndicatorDirection(-1);
-    } else if (newPosition <= 0) {
-      newPosition = 0;
-      setIndicatorDirection(1);
-    }
+    setIndicatorPosition(prev => {
+      let newPos = prev + (indicatorDirection * indicatorSpeed * deltaTime / 1000);
+      
+      // Reverse direction if at edges
+      if (newPos >= gaugeWidth - 10) {
+        newPos = gaugeWidth - 10;
+        setIndicatorDirection(-1);
+      } else if (newPos <= 0) {
+        newPos = 0;
+        setIndicatorDirection(1);
+      }
+      
+      return newPos;
+    });
     
-    setIndicatorPosition(newPosition);
-    
-    // Always ensure we request the next animation frame
     animationRef.current = requestAnimationFrame(updateIndicator);
-  }, [indicatorDirection, indicatorSpeed, isActive]); // Remove indicatorPosition from deps to prevent re-creation of this function
+  }, [indicatorDirection, indicatorSpeed, isActive]);
   
   // Handle catch attempt
   const handleCatchAttempt = useCallback(() => {
