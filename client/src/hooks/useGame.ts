@@ -93,7 +93,21 @@ export function useGame() {
             
             // Fetch player stats
             fetch(`/api/users/${userId}/stats`)
-              .then(res => res.json())
+              .then(res => {
+                if (res.ok) {
+                  return res.json();
+                } else if (res.status === 404) {
+                  // Player stats not found, create them
+                  return apiRequest('POST', `/api/users/${userId}/stats`, {
+                    userId: userId
+                  }).then(newStats => {
+                    console.log("Created new player stats:", newStats);
+                    return newStats;
+                  });
+                } else {
+                  throw new Error('Failed to fetch player stats');
+                }
+              })
               .then(stats => {
                 setGameState(prevState => {
                   if (!prevState) return null;
@@ -102,14 +116,26 @@ export function useGame() {
                     ...prevState,
                     player: {
                       ...prevState.player,
-                      position: { x: stats.positionX, y: stats.positionY },
+                      position: { 
+                        x: stats.positionX || 500, 
+                        y: stats.positionY || 500
+                      },
                       stats: {
-                        fishCaught: stats.fishCaught,
-                        largestFish: stats.largestFish,
-                        rareFinds: stats.rareFinds
+                        fishCaught: stats.fishCaught || 0,
+                        largestFish: stats.largestFish || 0,
+                        rareFinds: stats.rareFinds || 0
                       }
                     }
                   };
+                });
+              })
+              .catch(err => {
+                console.error("Error with player stats:", err);
+                // Fallback to default values
+                setGameState(prevState => {
+                  if (!prevState) return null;
+                  
+                  return prevState;
                 });
               });
             
@@ -400,7 +426,15 @@ export function useGame() {
     const dy = y - gameState.player.position.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
     
-    // Set the ship's direction and start moving
+    // Calculate distance to clicked point
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Only set destination if it's far enough away (avoid tiny movements)
+    if (distance < 10) {
+      return;
+    }
+    
+    // Set the ship's direction, destination and start moving
     setGameState(prev => {
       if (!prev) return null;
       
@@ -410,7 +444,8 @@ export function useGame() {
           ...prev.player,
           direction: angle,
           isMoving: true,
-          speed: 2 // Start at a reasonable speed
+          speed: 2, // Start at a reasonable speed
+          destination: { x, y } // Set the destination coordinates
         }
       };
     });

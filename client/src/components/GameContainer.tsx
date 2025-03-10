@@ -58,10 +58,11 @@ export default function GameContainer({
         <div className="absolute bottom-4 left-4 bg-gray-800 bg-opacity-75 p-2 rounded pixel-border">
           <h3 className="font-pixel text-xs mb-2 text-white">CONTROLS:</h3>
           <ul className="text-xs space-y-1 font-pixel-body text-white">
-            <li>WASD / Arrow Keys: Move Ship</li>
+            <li>Mouse Click: Navigate to Position</li>
+            <li>WASD / Arrow Keys: Manual Steering</li>
             <li>Space: Start Fishing (when stopped)</li>
-            <li>E: Interact</li>
-            <li>I: Inventory</li>
+            <li>E: Interact with Nearby Objects</li>
+            <li>I: Open Inventory</li>
           </ul>
         </div>
         
