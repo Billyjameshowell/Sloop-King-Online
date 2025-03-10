@@ -121,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const defaultY = hubIsland ? hubIsland.positionY : 500;
       
       // Create new stats with defaults
-      const newStats = await storage.createPlayerStats({
+      const statsData = insertPlayerStatsSchema.parse({
         userId,
         fishCaught: 0,
         largestFish: 0,
@@ -130,9 +130,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         positionY: defaultY
       });
       
+      const newStats = await storage.createPlayerStats(statsData);
+      
       res.status(201).json(newStats);
     } catch (error) {
       console.error("Error creating player stats:", error);
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid stats data", errors: error.errors });
+      }
       res.status(500).json({ message: "Error creating player stats" });
     }
   });
