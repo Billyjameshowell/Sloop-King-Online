@@ -93,7 +93,7 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
               ws,
               position: { x: stats.positionX, y: stats.positionY },
               isMoving: false,
-              isAnchored: true,
+              isAnchored: false, // Start unanchored to allow movement
               isFishing: false
             };
             
@@ -149,16 +149,16 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
               return;
             }
             
-            const { position, isMoving, isAnchored, isFishing } = data.payload;
-            client.position = position;
-            client.isMoving = isMoving;
-            client.isAnchored = isAnchored;
-            client.isFishing = isFishing;
+            const positionUpdate = data.payload;
+            client.position = positionUpdate.position;
+            client.isMoving = positionUpdate.isMoving;
+            client.isAnchored = positionUpdate.isAnchored;
+            client.isFishing = positionUpdate.isFishing;
             
             // Update position in storage
             await storage.updatePlayerStats(client.userId, {
-              positionX: position.x,
-              positionY: position.y
+              positionX: positionUpdate.position.x,
+              positionY: positionUpdate.position.y
             });
             
             // Broadcast position update to other clients
@@ -166,10 +166,10 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
               type: "player_update",
               payload: {
                 userId: client.userId,
-                position,
-                isMoving,
-                isAnchored,
-                isFishing
+                position: positionUpdate.position,
+                isMoving: positionUpdate.isMoving,
+                isAnchored: positionUpdate.isAnchored,
+                isFishing: positionUpdate.isFishing
               }
             });
             break;

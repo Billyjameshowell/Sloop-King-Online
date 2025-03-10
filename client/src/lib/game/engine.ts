@@ -20,10 +20,30 @@ let keys = {
   i: false
 };
 
-export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
-  if (gameState.player.isFishing) return;
+// Debug function to test movement
+export function debugKeyPress(direction: 'up' | 'down' | 'left' | 'right') {
+  keys[direction] = true;
+  console.log('Debug key activated:', direction, keys);
   
-  console.log('Key down:', e.code, gameState);
+  // Release the key after 500ms
+  setTimeout(() => {
+    keys[direction] = false;
+    console.log('Debug key released:', direction, keys);
+  }, 500);
+}
+
+export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
+  if (gameState.player.isFishing) {
+    console.log('Key event ignored - player is fishing');
+    return;
+  }
+  
+  if (gameState.player.isAnchored) {
+    console.log('Key ignored - player is anchored');
+    return;
+  }
+  
+  console.log('Key down event fired:', e.code);
   
   switch (e.code) {
     case 'KeyW':
@@ -60,7 +80,17 @@ export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
 }
 
 export function handleKeyUp(e: KeyboardEvent, gameState: GameState) {
-  if (gameState.player.isFishing) return;
+  if (gameState.player.isFishing) {
+    console.log('Key up ignored - player is fishing');
+    return;
+  }
+  
+  if (gameState.player.isAnchored) {
+    console.log('Key up ignored - player is anchored');
+    return;
+  }
+  
+  console.log('Key up event fired:', e.code);
   
   switch (e.code) {
     case 'KeyW':

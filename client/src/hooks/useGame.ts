@@ -82,7 +82,7 @@ export function useGame() {
                   rareFinds: 0
                 },
                 isMoving: false,
-                isAnchored: true,
+                isAnchored: false, // Start unanchored so ship can move
                 isFishing: false,
                 direction: 0,
                 speed: 0
