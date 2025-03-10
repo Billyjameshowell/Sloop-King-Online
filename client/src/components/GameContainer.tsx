@@ -12,6 +12,7 @@ interface GameContainerProps {
   onDropAnchor: () => void;
   onReturnToHub: () => void;
   onOpenMap: () => void;
+  onSetDestination?: (x: number, y: number) => void;
 }
 
 export default function GameContainer({
@@ -21,7 +22,8 @@ export default function GameContainer({
   onCatchFish,
   onDropAnchor,
   onReturnToHub,
-  onOpenMap
+  onOpenMap,
+  onSetDestination
 }: GameContainerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -39,6 +41,7 @@ export default function GameContainer({
         <GameCanvas 
           ref={canvasRef} 
           gameState={gameState} 
+          onSetDestination={onSetDestination}
         />
         
         {/* Player Position Overlay */}

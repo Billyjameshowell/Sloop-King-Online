@@ -1,18 +1,40 @@
-import { forwardRef, useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useRef, useCallback } from 'react';
 import { GameState } from '@shared/schema';
 import { renderWorld, handleKeyDown, handleKeyUp } from '@/lib/game/engine';
 
 interface GameCanvasProps {
   gameState: GameState;
+  onSetDestination?: (x: number, y: number) => void;
 }
 
-const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(({ gameState }, ref) => {
+const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(({ gameState, onSetDestination }, ref) => {
   const animationRef = useRef<number | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   
+  // Handle canvas click to set ship destination
+  const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !onSetDestination || gameState.player.isAnchored) return;
+    
+    // Get canvas-relative coordinates
+    const rect = canvasRef.current.getBoundingClientRect();
+    const scaleX = canvasRef.current.width / rect.width;
+    const scaleY = canvasRef.current.height / rect.height;
+    
+    // Calculate world coordinates (accounting for camera position)
+    const worldX = (e.clientX - rect.left) * scaleX + gameState.player.position.x - canvasRef.current.width / 2;
+    const worldY = (e.clientY - rect.top) * scaleY + gameState.player.position.y - canvasRef.current.height / 2;
+    
+    console.log('Setting destination to:', worldX, worldY);
+    onSetDestination(worldX, worldY);
+  }, [gameState.player.position, gameState.player.isAnchored, onSetDestination]);
+
   useEffect(() => {
     const canvas = ref as React.RefObject<HTMLCanvasElement>;
     if (!canvas.current) return;
+    
+    // Store canvas reference
+    canvasRef.current = canvas.current;
     
     // Set canvas dimensions
     const resizeCanvas = () => {
@@ -73,8 +95,9 @@ const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(({ gameState }
   return (
     <canvas 
       ref={ref} 
-      className="w-full h-full bg-ocean-blue outline-none" 
+      className="w-full h-full bg-ocean-blue outline-none cursor-pointer" 
       tabIndex={0}
+      onClick={handleCanvasClick}
     />
   );
 });
