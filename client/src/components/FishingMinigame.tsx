@@ -82,17 +82,21 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
       <div className="w-32 h-32 bg-deep-blue mx-auto relative pixel-border">
         <div className="absolute inset-0 flex items-center justify-center">
           {isSuccess === null ? (
-            <div className="w-16 h-8 animate-wave" style={{ backgroundColor: fishSpecies.color }}>
-              {/* Fish silhouette */}
+            <div className="w-16 h-8 animate-wave relative" style={{ backgroundColor: fishSpecies.color }}>
+              {/* Fish silhouette with forked tail */}
               <div className="w-4 h-4 bg-white rounded-full absolute left-2 top-2"></div>
-              <div className="w-2 h-6 bg-white absolute right-2 top-1"></div>
+              {/* Create forked tail using two angled divs */}
+              <div className="w-2 h-3 bg-white absolute right-0 top-0" style={{ transform: 'skew(0deg, -20deg)' }}></div>
+              <div className="w-2 h-3 bg-white absolute right-0 bottom-0" style={{ transform: 'skew(0deg, 20deg)' }}></div>
             </div>
           ) : isSuccess ? (
             <div className="text-center">
-              <div className="w-20 h-12" style={{ backgroundColor: fishSpecies.color }}>
-                {/* Caught fish */}
+              <div className="w-20 h-12 relative" style={{ backgroundColor: fishSpecies.color }}>
+                {/* Caught fish with forked tail */}
                 <div className="w-4 h-4 bg-white rounded-full absolute left-4 top-4"></div>
-                <div className="w-2 h-6 bg-white absolute right-4 top-3"></div>
+                {/* Create forked tail using two angled divs */}
+                <div className="w-3 h-4 bg-white absolute right-0 top-1" style={{ transform: 'skew(0deg, -20deg)' }}></div>
+                <div className="w-3 h-4 bg-white absolute right-0 bottom-1" style={{ transform: 'skew(0deg, 20deg)' }}></div>
               </div>
               <p className="text-white font-pixel text-xs mt-2">You caught a</p>
               <p className="text-white font-pixel text-xs">{fishSpecies.name}!</p>
