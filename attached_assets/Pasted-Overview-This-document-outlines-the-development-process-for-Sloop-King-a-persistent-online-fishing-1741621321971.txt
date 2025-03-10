@@ -1,0 +1,129 @@
+Overview
+
+This document outlines the development process for Sloop King, a persistent online fishing game with a retro pixel-art aesthetic. The development will be structured in phases, requiring approval at each step to ensure thorough and efficient implementation.
+
+Development Phases & Approval Workflow
+
+Phase 1: Basic Ship Model (Approval Required)
+
+Implement a 2D pixel-art ship with a simple idle animation.
+
+Ensure the art style aligns with a classic retro aesthetic.
+
+No movement or interaction yet.
+
+Deliverable: A static, pixel-art ship displayed on the screen.
+
+Phase 2: Finite Overworld Rendering (Approval Required)
+
+Implement a finite ocean to avoid unnecessary server load.
+
+Ocean shaders and water effects should be included.
+
+Ensure performance optimization for smooth scrolling.
+
+Deliverable: The ship is visible within an animated ocean environment.
+
+Phase 3: Ship Movement (Approval Required)
+
+Implement keyboard-based movement (WASD/Arrow keys).
+
+Ship movement should have inertia:
+
+Acceleration to reach full speed.
+
+Deceleration when letting go of movement keys.
+
+Smooth directional turning.
+
+Implement an anchor system:
+
+When the ship is stopped, an anchor with chain lowers automatically from the bow.
+
+When movement resumes, the anchor retracts.
+
+Deliverable: The ship moves fluidly with inertia, and the anchor system functions correctly.
+
+Phase 4: Hub Area & Persistent Islands (Approval Required)
+
+Introduce a hub area where players spawn in.
+
+The hub will serve as a ship upgrade station and social space.
+
+Implement persistent named islands, making the world more memorable.
+
+Keep overall overworld complexities simple until later phases.
+
+Deliverable: Players spawn in the hub area with visible unique islands.
+
+Phase 5: Fishing Minigame (Approval Required)
+
+Implement an interactive fishing minigame while the player is idle in water.
+
+The minigame should feature a timing-based mechanic where:
+
+A dot moves along a gauge of different shapes (circle, segmented circle, triangle, etc.).
+
+The player must time clicks to hit the right sections.
+
+Fishing difficulty should be fair and satisfying (not too easy or frustrating).
+
+Deliverable: Players can initiate fishing and play the minigame.
+
+Phase 6: Fish Species Expansion (Approval Required)
+
+Introduce multiple species of fish with varying rarity.
+
+Each species should have a unique gauge shape for the fishing minigame.
+
+Store player's biggest fish catches in a collector's book or trophy case.
+
+Deliverable: A collection system displaying caught fish.
+
+Phase 7: Online Multiplayer Features (Approval Required)
+
+Implement real-time player presence using WebSockets.
+
+Players should be able to see other ships sailing.
+
+Fishing actions should be visible to nearby players.
+
+Introduce a chat system for in-game communication.
+
+Implement a wildlife system:
+
+Birds (seagulls/parrots) randomly spawn and land on trees, rocks, and stationary ships.
+
+Birds fly away when the ship moves.
+
+Rare golden or rainbow birds have a small chance of appearing.
+
+Implement a leaderboard system:
+
+Tracks who has caught the biggest fish and most fish each day.
+
+Updates daily and resets scores.
+
+Deliverable: A fully interactive, persistent multiplayer overworld with social elements and a daily leaderboard.
+
+Technical Considerations
+
+This PRD is tech stack agnostic, but the implementation should prioritize:
+
+Smooth performance (no lag in multiplayer interactions).
+
+Scalability (server efficiency for handling multiple players in real-time).
+
+Modular development (each phase should be built with extendability in mind).
+
+Pixel-perfect visuals (ensuring adherence to the retro aesthetic).
+
+Next Steps
+
+Begin with Phase 1 (Basic Ship Model).
+
+Submit for approval before moving to Phase 2.
+
+Iterate per phase, ensuring all features are implemented efficiently and thoroughly.
+
+Each phase must be rigorously tested before moving forward. This approach ensures a robust, high-quality game that meets all creative and technical requirements.
