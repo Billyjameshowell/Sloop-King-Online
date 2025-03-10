@@ -14,12 +14,35 @@ const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(({ gameState, 
   
   // Handle canvas click to set ship destination
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!canvasRef.current || !onSetDestination || gameState.player.isAnchored) return;
+    console.log('Canvas clicked!', e);
+    console.log('Current game state:', gameState);
+    console.log('Canvas ref exists:', !!canvasRef.current);
+    console.log('onSetDestination exists:', !!onSetDestination);
+    console.log('Is player anchored:', gameState.player.isAnchored);
+    
+    if (!canvasRef.current || !onSetDestination) {
+      console.log('Canvas click ignored: missing canvas ref or destination handler');
+      return;
+    }
+    
+    if (gameState.player.isAnchored) {
+      console.log('Canvas click ignored: player is anchored');
+      return;
+    }
     
     // Get canvas-relative coordinates
     const rect = canvasRef.current.getBoundingClientRect();
     const scaleX = canvasRef.current.width / rect.width;
     const scaleY = canvasRef.current.height / rect.height;
+    
+    console.log('Canvas dimensions:', {
+      width: canvasRef.current.width,
+      height: canvasRef.current.height,
+      rectWidth: rect.width,
+      rectHeight: rect.height,
+      scaleX,
+      scaleY
+    });
     
     // Calculate world coordinates (accounting for camera position)
     const worldX = (e.clientX - rect.left) * scaleX + gameState.player.position.x - canvasRef.current.width / 2;

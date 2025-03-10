@@ -23,25 +23,32 @@ let keys = {
 export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
   if (gameState.player.isFishing) return;
   
+  console.log('Key down:', e.code, gameState);
+  
   switch (e.code) {
     case 'KeyW':
     case 'ArrowUp':
       keys.up = true;
+      console.log('UP key pressed, keys state:', keys);
       break;
     case 'KeyS':
     case 'ArrowDown':
       keys.down = true;
+      console.log('DOWN key pressed, keys state:', keys);
       break;
     case 'KeyA':
     case 'ArrowLeft':
       keys.left = true;
+      console.log('LEFT key pressed, keys state:', keys);
       break;
     case 'KeyD':
     case 'ArrowRight':
       keys.right = true;
+      console.log('RIGHT key pressed, keys state:', keys);
       break;
     case 'Space':
       keys.space = true;
+      console.log('SPACE key pressed, keys state:', keys);
       break;
     case 'KeyE':
       keys.e = true;
@@ -87,13 +94,30 @@ export function handleKeyUp(e: KeyboardEvent, gameState: GameState) {
 export function updateShipPhysics(gameState: GameState, deltaTime: number) {
   const player = gameState.player;
   
+  // Debug physics update
+  console.log('Physics update - delta:', deltaTime, 'Player state:', {
+    position: player.position, 
+    direction: player.direction,
+    speed: player.speed,
+    isMoving: player.isMoving,
+    isAnchored: player.isAnchored,
+    isFishing: player.isFishing,
+    destination: player.destination,
+    keysState: {...keys}
+  });
+  
   // Skip physics update if fishing
-  if (player.isFishing) return;
+  if (player.isFishing) {
+    console.log('Physics update skipped: Player is fishing');
+    return;
+  }
   
   // Only allow movement if not anchored
   if (!player.isAnchored) {
+    console.log('Player is not anchored, movement allowed');
     // Auto-pilot to destination if set
     if (player.destination) {
+      console.log('Following destination:', player.destination);
       // Calculate angle to destination
       const dx = player.destination.x - player.position.x;
       const dy = player.destination.y - player.position.y;
