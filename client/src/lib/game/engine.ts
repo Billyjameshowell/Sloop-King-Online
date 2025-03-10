@@ -206,42 +206,50 @@ export function updateShipPhysics(gameState: GameState, deltaTime: number) {
       }
     } else {
       // Normal keyboard controls when no destination is set
-      // Handle turning
-      if (keys.left) {
-        player.direction -= TURN_SPEED * (deltaTime / 16);
-      }
-      if (keys.right) {
-        player.direction += TURN_SPEED * (deltaTime / 16);
-      }
       
-      // Handle acceleration
-      if (keys.up) {
-        player.speed += ACCELERATION * (deltaTime / 16);
-        if (player.speed > MAX_SPEED) {
-          player.speed = MAX_SPEED;
-        }
-        player.isMoving = true;
-      } else if (keys.down) {
-        player.speed -= ACCELERATION * (deltaTime / 16) * 0.5; // Slower reverse
-        if (player.speed < -MAX_SPEED * 0.5) {
-          player.speed = -MAX_SPEED * 0.5;
-        }
-        player.isMoving = true;
-      } else {
-        // Decelerate if no input
-        if (player.speed > 0) {
-          player.speed -= DECELERATION * (deltaTime / 16);
-          if (player.speed < 0) {
-            player.speed = 0;
-          }
-        } else if (player.speed < 0) {
-          player.speed += DECELERATION * (deltaTime / 16);
-          if (player.speed > 0) {
-            player.speed = 0;
-          }
+      // Set movement direction based on keypresses
+      const movementX = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+      const movementY = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+      
+      // Only adjust values if there's movement input
+      if (movementX !== 0 || movementY !== 0) {
+        // Determine the movement direction based on key inputs
+        // We'll directly apply the movement rather than using the ship's direction
+        const moveSpeed = MAX_SPEED * 0.7; // Slightly slower than max speed
+        
+        // Update player position directly
+        player.position.x += movementX * moveSpeed * (deltaTime / 16);
+        player.position.y += movementY * moveSpeed * (deltaTime / 16);
+        
+        // Constrain to world bounds
+        if (player.position.x < 0) player.position.x = 0;
+        if (player.position.x > gameState.world.width) player.position.x = gameState.world.width;
+        if (player.position.y < 0) player.position.y = 0;
+        if (player.position.y > gameState.world.height) player.position.y = gameState.world.height;
+        
+        // Set player direction for visual rotation only if moving
+        if (movementX !== 0 || movementY !== 0) {
+          // Calculate direction based on movement
+          // 0 = right, 90 = down, 180 = left, 270 = up
+          let newDirection = 0;
+          
+          if (movementX > 0 && movementY === 0) newDirection = 0;       // Right
+          else if (movementX < 0 && movementY === 0) newDirection = 180; // Left
+          else if (movementX === 0 && movementY > 0) newDirection = 90;  // Down
+          else if (movementX === 0 && movementY < 0) newDirection = 270; // Up
+          else if (movementX > 0 && movementY > 0) newDirection = 45;    // Down-right
+          else if (movementX > 0 && movementY < 0) newDirection = 315;   // Up-right
+          else if (movementX < 0 && movementY > 0) newDirection = 135;   // Down-left
+          else if (movementX < 0 && movementY < 0) newDirection = 225;   // Up-left
+          
+          // Set the direction for rendering
+          player.direction = newDirection;
         }
         
-        player.isMoving = player.speed !== 0;
+        player.isMoving = true;
+      } else {
+        // No movement input
+        player.isMoving = false;
       }
     }
     

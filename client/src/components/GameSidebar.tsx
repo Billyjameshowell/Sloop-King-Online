@@ -104,6 +104,57 @@ export default function GameSidebar({
         </div>
       </div>
       
+      {/* Debug Controls */}
+      {!gameState.player.isAnchored && (
+        <div className="mt-4">
+          <h3 className="font-pixel text-red-500 mb-2 text-sm">DEBUG</h3>
+          <div className="bg-gray-700 p-2 rounded pixel-border">
+            <div className="grid grid-cols-3 gap-2">
+              <button 
+                className="col-start-2 pixel-btn bg-black text-white py-1 font-pixel text-xs" 
+                onClick={() => {
+                  if (typeof window.debugKeyPress === 'function') {
+                    window.debugKeyPress('up');
+                  }
+                }}
+              >
+                ⬆️
+              </button>
+              <button 
+                className="col-start-1 pixel-btn bg-black text-white py-1 font-pixel text-xs" 
+                onClick={() => {
+                  if (typeof window.debugKeyPress === 'function') {
+                    window.debugKeyPress('left');
+                  }
+                }}
+              >
+                ⬅️
+              </button>
+              <button 
+                className="col-start-3 pixel-btn bg-black text-white py-1 font-pixel text-xs" 
+                onClick={() => {
+                  if (typeof window.debugKeyPress === 'function') {
+                    window.debugKeyPress('right');
+                  }
+                }}
+              >
+                ➡️
+              </button>
+              <button 
+                className="col-start-2 pixel-btn bg-black text-white py-1 font-pixel text-xs" 
+                onClick={() => {
+                  if (typeof window.debugKeyPress === 'function') {
+                    window.debugKeyPress('down');
+                  }
+                }}
+              >
+                ⬇️
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Map Dialog */}
       <Dialog open={mapOpen} onOpenChange={setMapOpen}>
         <DialogContent className="bg-gray-800 border-4 border-black max-w-3xl">
