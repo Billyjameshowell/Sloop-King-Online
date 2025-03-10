@@ -389,6 +389,45 @@ export function useGame() {
     // This is handled by the UI component
   }, []);
   
+  // Set ship destination for click navigation
+  const setDestination = useCallback((x: number, y: number) => {
+    if (!gameState || gameState.player.isAnchored || gameState.player.isFishing) {
+      return;
+    }
+    
+    // Calculate direction towards the clicked position
+    const dx = x - gameState.player.position.x;
+    const dy = y - gameState.player.position.y;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    
+    // Set the ship's direction and start moving
+    setGameState(prev => {
+      if (!prev) return null;
+      
+      return {
+        ...prev,
+        player: {
+          ...prev.player,
+          direction: angle,
+          isMoving: true,
+          speed: 2 // Start at a reasonable speed
+        }
+      };
+    });
+    
+    // Send update to server
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'set_destination',
+        payload: {
+          x,
+          y,
+          direction: angle
+        }
+      }));
+    }
+  }, [gameState]);
+  
   return {
     gameState,
     otherPlayers,
@@ -400,6 +439,7 @@ export function useGame() {
     catchFish,
     dropAnchor,
     returnToHub,
-    openMap
+    openMap,
+    setDestination
   };
 }

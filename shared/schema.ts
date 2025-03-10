@@ -121,6 +121,7 @@ export type GameState = {
     isFishing: boolean;
     direction: number; // angle in degrees
     speed: number;
+    destination?: { x: number; y: number }; // Optional destination for click-to-navigate
   };
   world: {
     width: number;

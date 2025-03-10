@@ -1,6 +1,7 @@
 import { GameState } from '@shared/schema';
 import { renderShip } from './ship';
 import { renderWater, renderIslands } from './world';
+import { drawPixelatedCircle } from './sprites';
 
 // Movement constants
 const ACCELERATION = 0.1;
