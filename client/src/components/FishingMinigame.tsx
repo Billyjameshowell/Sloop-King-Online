@@ -73,7 +73,8 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
         <div 
           className="fish-indicator absolute h-full w-4 bg-white"
           style={{ 
-            left: `${indicatorPosition}px`
+            left: `${indicatorPosition}px`,
+            transition: "left 0.05s linear"
           }}
         ></div>
       </div>
