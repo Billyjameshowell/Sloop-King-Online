@@ -203,11 +203,11 @@ export class MemStorage implements IStorage {
     const playerStats: PlayerStats = { 
       ...insertStats, 
       id, 
-      fishCaught: 0,
-      largestFish: 0,
-      rareFinds: 0,
-      positionX: 500, // Start at hub
-      positionY: 500
+      fishCaught: insertStats.fishCaught ?? 0,
+      largestFish: insertStats.largestFish ?? 0,
+      rareFinds: insertStats.rareFinds ?? 0,
+      positionX: insertStats.positionX ?? 500, // Default to hub coordinates if not provided
+      positionY: insertStats.positionY ?? 500
     };
     this.playerStats.set(id, playerStats);
     return playerStats;

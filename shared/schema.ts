@@ -55,8 +55,12 @@ export const playerStats = pgTable("player_stats", {
   positionY: integer("position_y").default(0).notNull(),
 });
 
-export const insertPlayerStatsSchema = createInsertSchema(playerStats).pick({
-  userId: true,
+export const insertPlayerStatsSchema = createInsertSchema(playerStats).extend({
+  fishCaught: z.number().optional(),
+  largestFish: z.number().optional(),
+  rareFinds: z.number().optional(),
+  positionX: z.number().optional(),
+  positionY: z.number().optional(),
 });
 
 // Game world islands

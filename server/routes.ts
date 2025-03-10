@@ -2,7 +2,11 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupWebsocketServer } from "./websocket";
-import { insertUserSchema, insertPlayerCatchSchema } from "@shared/schema";
+import { 
+  insertUserSchema, 
+  insertPlayerCatchSchema, 
+  insertPlayerStatsSchema 
+} from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";
 
@@ -88,6 +92,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error) {
       res.status(500).json({ message: "Error retrieving player stats" });
+    }
+  });
+  
+  app.post("/api/users/:id/stats", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
+      // Check if user exists
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Check if stats already exist
+      const existingStats = await storage.getPlayerStats(userId);
+      if (existingStats) {
+        return res.status(409).json({ message: "Player stats already exist" });
+      }
+      
+      // Default position is at the hub island
+      const islands = await storage.getAllIslands();
+      const hubIsland = islands.find(island => island.isHub) || islands[0];
+      const defaultX = hubIsland ? hubIsland.positionX : 500;
+      const defaultY = hubIsland ? hubIsland.positionY : 500;
+      
+      // Create new stats with defaults
+      const newStats = await storage.createPlayerStats({
+        userId,
+        fishCaught: 0,
+        largestFish: 0,
+        rareFinds: 0,
+        positionX: defaultX,
+        positionY: defaultY
+      });
+      
+      res.status(201).json(newStats);
+    } catch (error) {
+      console.error("Error creating player stats:", error);
+      res.status(500).json({ message: "Error creating player stats" });
     }
   });
   
