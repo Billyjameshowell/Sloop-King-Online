@@ -1,0 +1,15 @@
+<svg width="24" height="16" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fish body -->
+  <path d="M4 8 A8 8 0 1 0 20 8 A8 8 0 1 0 4 8 Z" fill="#1E88E5" />
+  
+  <!-- Fish eye -->
+  <circle cx="8" cy="6" r="2" fill="#FFFFFF" />
+  <circle cx="8" cy="6" r="1" fill="#000000" />
+  
+  <!-- Fish tail -->
+  <path d="M20 8 L24 4 V12 Z" fill="#1E88E5" />
+  
+  <!-- Fish fin -->
+  <path d="M12 0 L16 4 L12 8 Z" fill="#1E88E5" />
+  <path d="M12 8 L16 12 L12 16 Z" fill="#1E88E5" />
+</svg>

@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* Import pixel fonts */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+/* Pixel art styling */
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Pixel border */
+.pixel-border {
+  box-shadow: 
+    0 -4px 0 0 #000, 
+    0 4px 0 0 #000, 
+    -4px 0 0 0 #000, 
+    4px 0 0 0 #000;
+}
+
+/* Pixel button */
+.pixel-btn {
+  image-rendering: pixelated;
+  box-shadow: 
+    inset -4px -4px 0 0 rgba(0,0,0,0.3),
+    0 -4px 0 0 #000, 
+    0 4px 0 0 #000, 
+    -4px 0 0 0 #000, 
+    4px 0 0 0 #000;
+  transition: all 0.1s;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 
+    inset -2px -2px 0 0 rgba(0,0,0,0.3),
+    0 -2px 0 0 #000, 
+    0 2px 0 0 #000, 
+    -2px 0 0 0 #000, 
+    2px 0 0 0 #000;
+}
+
+/* Water animation */
+.water {
+  background: repeating-linear-gradient(
+    0deg,
+    #1E88E5,
+    #64B5F6 20px,
+    #1E88E5 40px
+  );
+  background-size: 100% 40px;
+  animation: waterMove 2s linear infinite;
+}
+
+@keyframes waterMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 40px; }
+}
+
+/* Fishing indicator animations */
+.fish-hit-area {
+  transition: background-color 0.2s;
+}
+
+.fish-hit-area.active {
+  background-color: #4CAF50;
+}
+
+.fish-indicator {
+  position: absolute;
+  height: 100%;
+  width: 8px;
+  background-color: white;
+  animation: fishGauge 3s linear infinite;
+}
+
+@keyframes fishGauge {
+  0% { transform: translateX(0%); }
+  50% { transform: translateX(100%); }
+  100% { transform: translateX(0%); }
+}
+
+/* Ship animations */
+@keyframes wave {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(10px); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes anchor {
+  0% { transform: translateY(-20px); }
+  100% { transform: translateY(30px); }
+}
+
+.animate-wave {
+  animation: wave 2s ease-in-out infinite;
+}
+
+.animate-bob {
+  animation: bob 1.5s ease-in-out infinite;
+}
+
+.animate-anchor {
+  animation: anchor 2s ease-out forwards;
+}
+
+/* Game theme colors */
+:root {
+  --ocean-blue: #1E88E5;
+  --deep-blue: #0D47A1;
+  --island-green: #8BC34A;
+  --sand-yellow: #FFC107;
+  --wood-brown: #795548;
+  --fish-gold: #FFD700;
+}
+
+/* Font classes */
+.font-pixel {
+  font-family: 'Press Start 2P', cursive;
+}
+
+.font-pixel-body {
+  font-family: 'VT323', monospace;
+}
+
+/* Mobile styling */
+@media (max-width: 768px) {
+  .game-container {
+    display: none;
+  }
+  .mobile-message {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-message {
+    display: none;
+  }
+}
