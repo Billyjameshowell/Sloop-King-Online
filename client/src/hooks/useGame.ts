@@ -324,23 +324,50 @@ export function useGame() {
   
   // Drop anchor
   const dropAnchor = useCallback(() => {
-    if (!gameState) return;
+    if (!gameState) {
+      console.log('dropAnchor: No game state available');
+      return;
+    }
+    
+    console.log('dropAnchor called, current anchored state:', gameState.player.isAnchored);
     
     // Toggle anchor state
     setGameState(prev => {
       if (!prev) return null;
       
-      return {
+      const newAnchorState = !prev.player.isAnchored;
+      console.log(`Setting anchor state to: ${newAnchorState ? 'anchored' : 'unanchored'}`);
+      
+      // Create the new state
+      const newState = {
         ...prev,
         player: {
           ...prev.player,
-          isAnchored: !prev.player.isAnchored,
-          // If we're dropping anchor, also set speed to 0
-          speed: !prev.player.isAnchored ? 0 : prev.player.speed,
-          isMoving: !prev.player.isAnchored ? false : prev.player.isMoving
+          isAnchored: newAnchorState,
+          // If we're dropping anchor, set speed to 0 and stop moving
+          // If we're raising anchor, we still need speed 0 initially
+          speed: 0,
+          isMoving: false,
+          destination: undefined // Clear any destination when toggling anchor
         }
       };
+      
+      console.log('New player state will be:', newState.player);
+      return newState;
     });
+    
+    // Send update to server
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      console.log('Sending anchor update to WebSocket server');
+      wsRef.current.send(JSON.stringify({
+        type: 'anchor_toggle',
+        payload: {
+          isAnchored: !gameState.player.isAnchored
+        }
+      }));
+    } else {
+      console.log('Cannot send anchor update: WebSocket not connected');
+    }
   }, [gameState]);
   
   // Return to hub

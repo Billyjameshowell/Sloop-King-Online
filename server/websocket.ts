@@ -216,6 +216,63 @@ export function setupWebsocketServer(httpServer: Server, storage: IStorage) {
             });
             break;
             
+          case "anchor_toggle":
+            if (!client) {
+              sendError(ws, "Not authenticated");
+              return;
+            }
+            
+            console.log(`Player ${client.username} (ID: ${client.userId}) toggled anchor state`);
+            
+            // Toggle anchor state
+            const anchorState = data.payload.isAnchored;
+            client.isAnchored = anchorState;
+            
+            // If anchoring, also stop movement
+            if (anchorState) {
+              client.isMoving = false;
+            }
+            
+            console.log(`Updated client state: isAnchored=${client.isAnchored}, isMoving=${client.isMoving}`);
+            
+            // Broadcast anchor state to other clients
+            broadcastToOthers(client, {
+              type: "player_update",
+              payload: {
+                userId: client.userId,
+                position: client.position,
+                isMoving: client.isMoving,
+                isAnchored: client.isAnchored,
+                isFishing: client.isFishing
+              }
+            });
+            break;
+            
+          case "set_destination":
+            if (!client) {
+              sendError(ws, "Not authenticated");
+              return;
+            }
+            
+            console.log(`Player ${client.username} (ID: ${client.userId}) set new destination`);
+            
+            // Update client state with new destination info
+            const destination = data.payload;
+            client.isMoving = true;
+            
+            // Broadcast update to other clients
+            broadcastToOthers(client, {
+              type: "player_update",
+              payload: {
+                userId: client.userId,
+                position: client.position,
+                isMoving: true,
+                isAnchored: client.isAnchored,
+                isFishing: client.isFishing
+              }
+            });
+            break;
+          
           case "catch_fish":
             if (!client) {
               sendError(ws, "Not authenticated");

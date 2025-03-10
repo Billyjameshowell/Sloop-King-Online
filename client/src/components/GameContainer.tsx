@@ -44,6 +44,41 @@ export default function GameContainer({
           onSetDestination={onSetDestination}
         />
         
+        {/* Debug Controls */}
+        <div className="absolute top-0 right-0 bg-gray-800 bg-opacity-75 p-2 rounded pixel-border">
+          <div className="flex flex-col items-end space-y-2">
+            <div className="text-xs font-pixel text-white">
+              DEBUG CONTROLS
+            </div>
+            <button 
+              className="bg-red-600 hover:bg-red-700 text-white text-xs font-pixel px-2 py-1 rounded"
+              onClick={() => {
+                console.log('Toggle anchor button clicked');
+                if (gameState.player.isAnchored) {
+                  console.log('Raising anchor');
+                } else {
+                  console.log('Dropping anchor');
+                }
+                onDropAnchor();
+              }}
+            >
+              {gameState.player.isAnchored ? "Raise Anchor" : "Drop Anchor"}
+            </button>
+            <div className="text-xs font-pixel text-white">
+              Player state:
+              <pre className="whitespace-pre-wrap text-yellow-400 text-xs">
+                {JSON.stringify({
+                  position: gameState.player.position,
+                  direction: gameState.player.direction,
+                  speed: gameState.player.speed,
+                  isMoving: gameState.player.isMoving,
+                  isAnchored: gameState.player.isAnchored
+                }, null, 2)}
+              </pre>
+            </div>
+          </div>
+        </div>
+        
         {/* Player Position Overlay */}
         <div className="absolute top-4 left-4 bg-gray-800 bg-opacity-75 p-2 rounded pixel-border">
           <div className="flex items-center space-x-2 text-xs font-pixel">
