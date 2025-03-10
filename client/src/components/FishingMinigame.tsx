@@ -73,9 +73,7 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
         <div 
           className="fish-indicator"
           style={{ 
-            left: `${indicatorPosition}px`,
-            animation: 'none',
-            transform: `translateX(0px)`
+            left: `${indicatorPosition}px`
           }}
         ></div>
       </div>

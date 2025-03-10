@@ -405,79 +405,11 @@ export function useGame() {
     // This is handled by the UI component
   }, []);
   
-  // Set ship destination for click navigation
-  const setDestination = useCallback((x: number, y: number) => {
-    console.log('setDestination called with:', x, y);
-    console.log('Current gameState:', gameState);
-    
-    if (!gameState) {
-      console.log('setDestination aborted: gameState is null');
-      return;
-    }
-    
-    if (gameState.player.isAnchored) {
-      console.log('setDestination aborted: player is anchored');
-      return;
-    }
-    
-    if (gameState.player.isFishing) {
-      console.log('setDestination aborted: player is fishing');
-      return;
-    }
-    
-    // Calculate direction towards the clicked position
-    const dx = x - gameState.player.position.x;
-    const dy = y - gameState.player.position.y;
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-    
-    // Calculate distance to clicked point
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    console.log('Distance to destination:', distance, 'Direction angle:', angle);
-    
-    // Only set destination if it's far enough away (avoid tiny movements)
-    if (distance < 10) {
-      console.log('setDestination aborted: destination too close');
-      return;
-    }
-    
-    console.log('Setting new destination and updating state');
-    // Set the ship's direction, destination and start moving
-    setGameState(prev => {
-      if (!prev) {
-        console.log('setGameState callback: prev state is null');
-        return null;
-      }
-      
-      const newState = {
-        ...prev,
-        player: {
-          ...prev.player,
-          direction: angle,
-          isMoving: true,
-          speed: 2, // Start at a reasonable speed
-          destination: { x, y } // Set the destination coordinates
-        }
-      };
-      
-      console.log('New game state:', newState);
-      return newState;
-    });
-    
-    // Send update to server
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      console.log('Sending destination update to server');
-      wsRef.current.send(JSON.stringify({
-        type: 'set_destination',
-        payload: {
-          x,
-          y,
-          direction: angle
-        }
-      }));
-    } else {
-      console.log('Cannot send update to server: WebSocket not connected');
-    }
-  }, [gameState]);
+  // This function is no longer needed since we're removing click-to-navigate
+  const setDestination = useCallback(() => {
+    // Functionality removed as requested
+    console.log('Click-to-navigate has been removed from the game');
+  }, []);
   
   return {
     gameState,

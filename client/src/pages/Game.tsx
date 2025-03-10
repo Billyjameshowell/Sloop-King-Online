@@ -21,8 +21,7 @@ export default function Game({ username, userId }: GameProps) {
     returnToHub,
     openMap,
     isConnected,
-    initialize,
-    setDestination
+    initialize
   } = useGame();
   
   useEffect(() => {
@@ -53,7 +52,6 @@ export default function Game({ username, userId }: GameProps) {
         onDropAnchor={dropAnchor}
         onReturnToHub={returnToHub}
         onOpenMap={openMap}
-        onSetDestination={setDestination}
       />
     </div>
   );

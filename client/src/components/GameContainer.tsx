@@ -12,7 +12,6 @@ interface GameContainerProps {
   onDropAnchor: () => void;
   onReturnToHub: () => void;
   onOpenMap: () => void;
-  onSetDestination?: (x: number, y: number) => void;
 }
 
 export default function GameContainer({
@@ -22,8 +21,7 @@ export default function GameContainer({
   onCatchFish,
   onDropAnchor,
   onReturnToHub,
-  onOpenMap,
-  onSetDestination
+  onOpenMap
 }: GameContainerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -40,8 +38,7 @@ export default function GameContainer({
       <main className="flex-1 relative">
         <GameCanvas 
           ref={canvasRef} 
-          gameState={gameState} 
-          onSetDestination={onSetDestination}
+          gameState={gameState}
         />
         
         {/* Debug Controls */}
@@ -93,8 +90,7 @@ export default function GameContainer({
         <div className="absolute bottom-4 left-4 bg-gray-800 bg-opacity-75 p-2 rounded pixel-border">
           <h3 className="font-pixel text-xs mb-2 text-white">CONTROLS:</h3>
           <ul className="text-xs space-y-1 font-pixel-body text-white">
-            <li>Mouse Click: Navigate to Position</li>
-            <li>WASD / Arrow Keys: Manual Steering</li>
+            <li>WASD / Arrow Keys: Ship Movement</li>
             <li>Space: Start Fishing (when stopped)</li>
             <li>E: Interact with Nearby Objects</li>
             <li>I: Open Inventory</li>

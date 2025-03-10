@@ -1,56 +1,15 @@
-import { forwardRef, useEffect, useRef, useCallback } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import { GameState } from '@shared/schema';
 import { renderWorld, handleKeyDown, handleKeyUp } from '@/lib/game/engine';
 
 interface GameCanvasProps {
   gameState: GameState;
-  onSetDestination?: (x: number, y: number) => void;
 }
 
-const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(({ gameState, onSetDestination }, ref) => {
+const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(({ gameState }, ref) => {
   const animationRef = useRef<number | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  
-  // Handle canvas click to set ship destination
-  const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    console.log('Canvas clicked!', e);
-    console.log('Current game state:', gameState);
-    console.log('Canvas ref exists:', !!canvasRef.current);
-    console.log('onSetDestination exists:', !!onSetDestination);
-    console.log('Is player anchored:', gameState.player.isAnchored);
-    
-    if (!canvasRef.current || !onSetDestination) {
-      console.log('Canvas click ignored: missing canvas ref or destination handler');
-      return;
-    }
-    
-    if (gameState.player.isAnchored) {
-      console.log('Canvas click ignored: player is anchored');
-      return;
-    }
-    
-    // Get canvas-relative coordinates
-    const rect = canvasRef.current.getBoundingClientRect();
-    const scaleX = canvasRef.current.width / rect.width;
-    const scaleY = canvasRef.current.height / rect.height;
-    
-    console.log('Canvas dimensions:', {
-      width: canvasRef.current.width,
-      height: canvasRef.current.height,
-      rectWidth: rect.width,
-      rectHeight: rect.height,
-      scaleX,
-      scaleY
-    });
-    
-    // Calculate world coordinates (accounting for camera position)
-    const worldX = (e.clientX - rect.left) * scaleX + gameState.player.position.x - canvasRef.current.width / 2;
-    const worldY = (e.clientY - rect.top) * scaleY + gameState.player.position.y - canvasRef.current.height / 2;
-    
-    console.log('Setting destination to:', worldX, worldY);
-    onSetDestination(worldX, worldY);
-  }, [gameState.player.position, gameState.player.isAnchored, onSetDestination]);
 
   useEffect(() => {
     const canvas = ref as React.RefObject<HTMLCanvasElement>;
@@ -161,9 +120,8 @@ const GameCanvas = forwardRef<HTMLCanvasElement, GameCanvasProps>(({ gameState, 
   return (
     <canvas 
       ref={ref} 
-      className="w-full h-full bg-ocean-blue outline-none cursor-pointer" 
+      className="w-full h-full bg-ocean-blue outline-none" 
       tabIndex={0}
-      onClick={handleCanvasClick}
     />
   );
 });
