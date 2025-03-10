@@ -74,6 +74,9 @@ export function useFishing() {
     };
   }, [allFishSpecies]);
   
+  // Create a ref to track current direction to avoid state update delays
+  const directionRef = useRef(1);
+  
   // Update indicator position
   const updateIndicator = useCallback((time: number) => {
     if (!isActive) return;
@@ -82,33 +85,28 @@ export function useFishing() {
     lastTimeRef.current = time;
     
     // Calculate new position
-    const gaugeWidth = 256; 
+    const gaugeWidth = 256;
     
-    // First check if we need to reverse direction
-    let newDirection = indicatorDirection;
-    const projectedPos = indicatorPosition + (indicatorDirection * indicatorSpeed * deltaTime / 1000);
+    // Get current position and direction from ref
+    const currentPosition = indicatorPosition;
+    const currentDirection = directionRef.current;
     
-    if (projectedPos >= gaugeWidth - 10) {
-      newDirection = -1;
+    // Calculate new position
+    let newPos = currentPosition + (currentDirection * indicatorSpeed * deltaTime / 1000);
+    
+    // Check boundaries and reverse direction if needed
+    if (newPos >= gaugeWidth - 10) {
+      newPos = gaugeWidth - 10;
+      directionRef.current = -1;
       setIndicatorDirection(-1);
-    } else if (projectedPos <= 0) {
-      newDirection = 1;
+    } else if (newPos <= 0) {
+      newPos = 0;
+      directionRef.current = 1;
       setIndicatorDirection(1);
     }
     
-    // Now update position with the possibly new direction
-    setIndicatorPosition(prev => {
-      let newPos = prev + (newDirection * indicatorSpeed * deltaTime / 1000);
-      
-      // Clamp position to boundaries
-      if (newPos >= gaugeWidth - 10) {
-        newPos = gaugeWidth - 10;
-      } else if (newPos <= 0) {
-        newPos = 0;
-      }
-      
-      return newPos;
-    });
+    // Update position
+    setIndicatorPosition(newPos);
     
     animationRef.current = requestAnimationFrame(updateIndicator);
   }, [indicatorDirection, indicatorSpeed, isActive]);
