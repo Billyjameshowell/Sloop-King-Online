@@ -17,7 +17,7 @@ export const getFishingParams = (rarity: number): FishingParams => {
         maxHitPercentage: 45,
         minSpeed: 100,
         maxSpeed: 150,
-        gaugeWidth: 250
+        gaugeWidth: 256 // w-64 = 16rem = 256px
       };
     case 2:
       return {
@@ -25,7 +25,7 @@ export const getFishingParams = (rarity: number): FishingParams => {
         maxHitPercentage: 40,
         minSpeed: 150,
         maxSpeed: 200,
-        gaugeWidth: 250
+        gaugeWidth: 256
       };
     case 3:
       return {
@@ -33,7 +33,7 @@ export const getFishingParams = (rarity: number): FishingParams => {
         maxHitPercentage: 35,
         minSpeed: 200,
         maxSpeed: 250,
-        gaugeWidth: 250
+        gaugeWidth: 256
       };
     case 4:
       return {
@@ -41,7 +41,7 @@ export const getFishingParams = (rarity: number): FishingParams => {
         maxHitPercentage: 25,
         minSpeed: 250,
         maxSpeed: 300,
-        gaugeWidth: 250
+        gaugeWidth: 256
       };
     case 5: // Rare
       return {
@@ -49,7 +49,7 @@ export const getFishingParams = (rarity: number): FishingParams => {
         maxHitPercentage: 20,
         minSpeed: 300,
         maxSpeed: 350,
-        gaugeWidth: 250
+        gaugeWidth: 256
       };
     default:
       return {
@@ -57,7 +57,7 @@ export const getFishingParams = (rarity: number): FishingParams => {
         maxHitPercentage: 40,
         minSpeed: 150,
         maxSpeed: 200,
-        gaugeWidth: 250
+        gaugeWidth: 256
       };
   }
 };
