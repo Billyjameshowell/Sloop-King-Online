@@ -35,20 +35,7 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
     };
   }, [handleCatchAttempt, onCancel]);
   
-  // If we've determined success or failure, show result
-  useEffect(() => {
-    if (isSuccess !== null) {
-      const timer = setTimeout(() => {
-        if (isSuccess && fishSpecies) {
-          onCatch(fishSpecies.id, fishSize);
-        } else {
-          resetGame();
-        }
-      }, 1500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isSuccess, fishSpecies, fishSize, onCatch, resetGame]);
+  // Removed the auto-timeout effect so user can click Keep or Release
   
   if (!fishSpecies) {
     return null;
@@ -110,31 +97,60 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
       
       {/* Instructions */}
       <p className="text-center mt-4 text-sm text-white font-pixel-body">
-        Press SPACE when the indicator hits the green zone!
+        {isSuccess === null 
+          ? "Press SPACE when the indicator hits the green zone!" 
+          : isSuccess 
+            ? "Click KEEP to add this fish to your collection, or RELEASE to let it go."
+            : "Better luck next time!"}
       </p>
       
       {/* Action buttons */}
       <div className="flex justify-center space-x-4 mt-4">
-        <button 
-          className="pixel-btn bg-red-500 text-white px-4 py-2 font-pixel text-xs"
-          onClick={onCancel}
-        >
-          CANCEL
-        </button>
         {isSuccess === null ? (
-          <button 
-            className="pixel-btn bg-green-500 text-white px-4 py-2 font-pixel text-xs"
-            onClick={handleCatchAttempt}
-          >
-            CATCH!
-          </button>
+          <>
+            <button 
+              className="pixel-btn bg-red-500 text-white px-4 py-2 font-pixel text-xs"
+              onClick={onCancel}
+            >
+              CANCEL
+            </button>
+            <button 
+              className="pixel-btn bg-green-500 text-white px-4 py-2 font-pixel text-xs"
+              onClick={handleCatchAttempt}
+            >
+              CATCH!
+            </button>
+          </>
+        ) : isSuccess ? (
+          <>
+            <button 
+              className="pixel-btn bg-red-500 text-white px-4 py-2 font-pixel text-xs"
+              onClick={() => resetGame()}
+            >
+              RELEASE
+            </button>
+            <button 
+              className="pixel-btn bg-green-500 text-white px-4 py-2 font-pixel text-xs"
+              onClick={() => onCatch(fishSpecies.id, fishSize)}
+            >
+              KEEP
+            </button>
+          </>
         ) : (
-          <button 
-            className="pixel-btn bg-blue-500 text-white px-4 py-2 font-pixel text-xs"
-            onClick={() => isSuccess ? onCatch(fishSpecies.id, fishSize) : resetGame()}
-          >
-            {isSuccess ? "KEEP" : "TRY AGAIN"}
-          </button>
+          <>
+            <button 
+              className="pixel-btn bg-red-500 text-white px-4 py-2 font-pixel text-xs"
+              onClick={onCancel}
+            >
+              QUIT
+            </button>
+            <button 
+              className="pixel-btn bg-green-500 text-white px-4 py-2 font-pixel text-xs"
+              onClick={resetGame}
+            >
+              TRY AGAIN
+            </button>
+          </>
         )}
       </div>
     </div>
