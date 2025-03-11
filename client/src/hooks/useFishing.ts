@@ -83,28 +83,21 @@ export function useFishing() {
     
     // Calculate new position
     const gaugeWidth = 256; 
+    const indicatorWidth = 4; // Width of the indicator element (4px)
     
-    // First check if we need to reverse direction
-    let newDirection = indicatorDirection;
-    const projectedPos = indicatorPosition + (indicatorDirection * indicatorSpeed * deltaTime / 1000);
-    
-    if (projectedPos >= gaugeWidth - 10) {
-      newDirection = -1;
-      setIndicatorDirection(-1);
-    } else if (projectedPos <= 0) {
-      newDirection = 1;
-      setIndicatorDirection(1);
-    }
-    
-    // Now update position with the possibly new direction
     setIndicatorPosition(prev => {
-      let newPos = prev + (newDirection * indicatorSpeed * deltaTime / 1000);
+      // Calculate projected position
+      let newPos = prev + (indicatorDirection * indicatorSpeed * deltaTime / 1000);
       
-      // Clamp position to boundaries
-      if (newPos >= gaugeWidth - 10) {
-        newPos = gaugeWidth - 10;
+      // Check boundaries and change direction
+      if (newPos >= gaugeWidth - indicatorWidth) {
+        // Hit right boundary, reverse direction
+        setIndicatorDirection(-1);
+        newPos = gaugeWidth - indicatorWidth; // Set at boundary
       } else if (newPos <= 0) {
-        newPos = 0;
+        // Hit left boundary, reverse direction
+        setIndicatorDirection(1);
+        newPos = 0; // Set at boundary
       }
       
       return newPos;
