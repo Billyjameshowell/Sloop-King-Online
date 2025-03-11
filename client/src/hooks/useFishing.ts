@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { FishSpecies } from '@shared/schema';
 import { 
@@ -18,39 +18,15 @@ export function useFishing() {
   const [fishSpecies, setFishSpecies] = useState<FishSpecies | null>(null);
   const [fishSize, setFishSize] = useState<number>(0);
   const [indicatorPosition, setIndicatorPosition] = useState<number>(0);
-  const [indicatorDirection, setIndicatorDirection] = useState<1 | -1>(1);
-  const [indicatorSpeed, setIndicatorSpeed] = useState<number>(150);
   const [hitZonePosition, setHitZonePosition] = useState<number>(150);
   const [hitZoneWidth, setHitZoneWidth] = useState<number>(60);
   const [isActive, setIsActive] = useState<boolean>(true);
   const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const directionRef = useRef<1 | -1>(1);
   
-  // Simple animation function that moves the indicator back and forth
-  const animate = useCallback(() => {
-    if (!isActive) return;
-    
-    const gaugeWidth = 256;
-    const indicatorWidth = 4;
-    
-    // Update position based on current direction
-    let newPos = indicatorPosition + (directionRef.current * 5);
-    
-    // Change direction if hitting boundaries
-    if (newPos >= gaugeWidth - indicatorWidth) {
-      directionRef.current = -1;
-      newPos = gaugeWidth - indicatorWidth;
-    } else if (newPos <= 0) {
-      directionRef.current = 1;
-      newPos = 0;
-    }
-    
-    setIndicatorPosition(newPos);
-    
-    // Continue animation
-    animationRef.current = requestAnimationFrame(animate);
-  }, [indicatorPosition, isActive]);
+  // Refs for animation
+  const animationRef = useRef<number | null>(null);
+  const movingRightRef = useRef<boolean>(true);
+  const speedRef = useRef<number>(3);
   
   // Initialize fishing minigame
   useEffect(() => {
@@ -82,24 +58,55 @@ export function useFishing() {
     const speed = Math.floor(
       Math.random() * (params.maxSpeed - params.minSpeed) + params.minSpeed
     );
-    setIndicatorSpeed(speed);
+    speedRef.current = Math.max(3, Math.floor(speed / 20)); // Ensure minimum speed
     
-    // Reset indicator position and direction
+    // Reset indicator position
     setIndicatorPosition(0);
-    directionRef.current = 1;
+    movingRightRef.current = true;
+    
+    // Animation function that will be called repeatedly
+    function moveIndicator() {
+      if (!isActive) return;
+      
+      const gaugeWidth = 256;
+      const indicatorWidth = 4;
+      
+      setIndicatorPosition(prev => {
+        let newPos;
+        
+        if (movingRightRef.current) {
+          newPos = prev + speedRef.current;
+          if (newPos >= gaugeWidth - indicatorWidth) {
+            movingRightRef.current = false;
+            newPos = gaugeWidth - indicatorWidth;
+          }
+        } else {
+          newPos = prev - speedRef.current;
+          if (newPos <= 0) {
+            movingRightRef.current = true;
+            newPos = 0;
+          }
+        }
+        
+        return newPos;
+      });
+      
+      animationRef.current = requestAnimationFrame(moveIndicator);
+    }
     
     // Start animation
-    animationRef.current = requestAnimationFrame(animate);
+    animationRef.current = requestAnimationFrame(moveIndicator);
     
+    // Cleanup when component unmounts
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [allFishSpecies, animate]);
+  }, [allFishSpecies, isActive]);
   
   // Handle catch attempt
-  const handleCatchAttempt = useCallback(() => {
+  const handleCatchAttempt = () => {
     if (!isActive || !fishSpecies) return;
     
     // Stop animation
@@ -118,11 +125,16 @@ export function useFishing() {
     );
     
     setIsSuccess(success);
-  }, [indicatorPosition, hitZonePosition, hitZoneWidth, isActive, fishSpecies]);
+  };
   
   // Reset the game
-  const resetGame = useCallback(() => {
+  const resetGame = () => {
     if (!allFishSpecies || allFishSpecies.length === 0) return;
+    
+    // Cancel any existing animation
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
     
     // Reset state
     setIsSuccess(null);
@@ -150,19 +162,49 @@ export function useFishing() {
     setHitZonePosition(hitPosition);
     setHitZoneWidth(hitZoneSize);
     
-    // Set indicator speed (not used in simplified implementation)
+    // Set indicator speed
     const speed = Math.floor(
       Math.random() * (params.maxSpeed - params.minSpeed) + params.minSpeed
     );
-    setIndicatorSpeed(speed);
+    speedRef.current = Math.max(3, Math.floor(speed / 20));
     
     // Reset indicator position
     setIndicatorPosition(0);
-    directionRef.current = 1;
+    movingRightRef.current = true;
+    
+    // Animation function that will be called repeatedly
+    function moveIndicator() {
+      if (!isActive) return;
+      
+      const gaugeWidth = 256;
+      const indicatorWidth = 4;
+      
+      setIndicatorPosition(prev => {
+        let newPos;
+        
+        if (movingRightRef.current) {
+          newPos = prev + speedRef.current;
+          if (newPos >= gaugeWidth - indicatorWidth) {
+            movingRightRef.current = false;
+            newPos = gaugeWidth - indicatorWidth;
+          }
+        } else {
+          newPos = prev - speedRef.current;
+          if (newPos <= 0) {
+            movingRightRef.current = true;
+            newPos = 0;
+          }
+        }
+        
+        return newPos;
+      });
+      
+      animationRef.current = requestAnimationFrame(moveIndicator);
+    }
     
     // Start animation
-    animationRef.current = requestAnimationFrame(animate);
-  }, [allFishSpecies, animate]);
+    animationRef.current = requestAnimationFrame(moveIndicator);
+  };
   
   return {
     fishSpecies,
