@@ -1,4 +1,6 @@
+
 import { GameState } from '@shared/schema';
+import { renderIsland, getClosestIsland, isPointInIsland } from './island';
 
 let waterOffset = 0;
 
@@ -55,8 +57,6 @@ export function renderWater(
   }
 }
 
-import { renderIsland } from './island';
-
 export function renderIslands(
   ctx: CanvasRenderingContext2D,
   gameState: GameState,
@@ -82,4 +82,17 @@ export function renderIslands(
     // Use the renderIsland function from island.ts
     renderIsland(ctx, island, screenX, screenY);
   });
+}
+
+// Simple world render function (can be used for standalone rendering)
+export function renderWorld(ctx: CanvasRenderingContext2D, islands: Island[]) {
+  // Clear or update the background
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  // Render all islands
+  for (const island of islands) {
+    renderIsland(ctx, island, island.positionX, island.positionY);
+  }
+
+  // Any additional world rendering logic here
 }
