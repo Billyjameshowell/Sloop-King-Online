@@ -20,20 +20,26 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
     gaugeRef
   } = fishingUtils;
   
+  // Effect for handling keyboard controls in the fishing minigame
+  // SPACE: Attempt to catch the fish when indicator is in the hit zone
+  // ESC: Cancel fishing and return to the main game
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
+        // Spacebar is used to catch fish during the minigame
         handleCatchAttempt();
+        e.preventDefault(); // Prevent any other actions
       }
       if (e.code === 'Escape') {
+        // Escape key exits the fishing minigame
         onCancel();
       }
     };
     
-    window.addEventListener('keypress', handleKeyPress);
+    window.addEventListener('keydown', handleKeyPress); // Changed from keypress to keydown for better responsiveness
     
     return () => {
-      window.removeEventListener('keypress', handleKeyPress);
+      window.removeEventListener('keydown', handleKeyPress);
     };
   }, [handleCatchAttempt, onCancel]);
   
