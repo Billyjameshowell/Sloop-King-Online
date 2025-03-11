@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef } from 'react';
 import { GameState } from '@shared/schema';
-import { renderWorld, handleKeyDown, handleKeyUp } from '@/lib/game/engine';
+import { renderWorld } from '@/lib/game/engine';
+import { handleKeyDown, handleKeyUp } from '@/lib/game/engine';
 
 interface GameCanvasProps {
   gameState: GameState;
