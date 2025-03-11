@@ -7,6 +7,7 @@ interface FishingMinigameProps {
 }
 
 export default function FishingMinigame({ onCancel, onCatch }: FishingMinigameProps) {
+  const fishingUtils = useFishing();
   const { 
     fishSpecies, 
     indicatorPosition, 
@@ -15,8 +16,9 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
     fishSize,
     isSuccess,
     handleCatchAttempt,
-    resetGame
-  } = useFishing();
+    resetGame,
+    gaugeRef
+  } = fishingUtils;
   
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -37,6 +39,13 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
   
   // Removed the auto-timeout effect so user can click Keep or Release
   
+  // Log the gauge size when it's available
+  useEffect(() => {
+    if (gaugeRef.current) {
+      console.log('Fishing gauge width:', gaugeRef.current.offsetWidth);
+    }
+  }, [gaugeRef.current]);
+  
   if (!fishSpecies) {
     return null;
   }
@@ -49,7 +58,7 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
         
         {/* Fishing gauge */}
         <div 
-          ref={fishingUtils.gaugeRef}
+          ref={gaugeRef}
           className="w-full h-10 bg-gray-700 relative mb-6 pixel-border overflow-hidden"
         >
           {/* Success zone */}
