@@ -17,8 +17,7 @@ let keys = {
   right: false,
   space: false,
   e: false,
-  i: false,
-  f: false
+  i: false
 };
 
 // Debug function kept for backward compatibility but functionality disabled
@@ -27,73 +26,19 @@ export function debugKeyPress(direction: 'up' | 'down' | 'left' | 'right') {
   console.log('Debug controls have been disabled');
 }
 
-// Function to toggle ship anchor state
-export function toggleAnchor(gameState: GameState) {
-  // Can't toggle anchor while fishing
-  if (gameState.player.isFishing) {
-    console.log('Cannot toggle anchor while fishing');
-    return;
-  }
-  
-  // Toggle the anchor state
-  gameState.player.isAnchored = !gameState.player.isAnchored;
-  console.log('Anchor toggled:', gameState.player.isAnchored ? 'DROPPED' : 'RAISED');
-  
-  // If we're dropping anchor, also stop all movement
-  if (gameState.player.isAnchored) {
-    gameState.player.speed = 0;
-    gameState.player.isMoving = false;
-    gameState.player.destination = undefined;
-  }
-}
-
-// Function to start fishing if anchored and not already fishing
-export function startFishing(gameState: GameState) {
-  if (gameState.player.isFishing) {
-    console.log('Already fishing');
-    return;
-  }
-  
-  if (!gameState.player.isAnchored) {
-    console.log('Cannot fish while moving. Drop anchor first (SPACE)');
-    return;
-  }
-  
-  // Start fishing
-  gameState.player.isFishing = true;
-  console.log('Started fishing');
-}
-
 export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
+  if (gameState.player.isFishing) {
+    console.log('Key event ignored - player is fishing');
+    return;
+  }
+  
+  if (gameState.player.isAnchored) {
+    console.log('Key ignored - player is anchored');
+    return;
+  }
+  
   console.log('Key down event fired:', e.code);
   
-  // Special keybinds that work regardless of state
-  if (e.code === 'Space') {
-    // Toggle anchor state with spacebar
-    toggleAnchor(gameState);
-    keys.space = true;
-    return;
-  }
-  
-  // F key to start fishing when anchored
-  if (e.code === 'KeyF') {
-    startFishing(gameState);
-    keys.f = true;
-    return;
-  }
-  
-  // Don't allow movement controls when anchored or fishing
-  if (gameState.player.isFishing) {
-    console.log('Movement keys ignored - player is fishing');
-    return;
-  }
-  
-  if (gameState.player.isAnchored) {
-    console.log('Movement keys ignored - player is anchored');
-    return;
-  }
-  
-  // Handle regular movement keys only when not anchored or fishing
   switch (e.code) {
     case 'KeyW':
     case 'ArrowUp':
@@ -115,6 +60,10 @@ export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
       keys.right = true;
       console.log('RIGHT key pressed, keys state:', keys);
       break;
+    case 'Space':
+      keys.space = true;
+      console.log('SPACE key pressed, keys state:', keys);
+      break;
     case 'KeyE':
       keys.e = true;
       break;
@@ -125,9 +74,18 @@ export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
 }
 
 export function handleKeyUp(e: KeyboardEvent, gameState: GameState) {
+  if (gameState.player.isFishing) {
+    console.log('Key up ignored - player is fishing');
+    return;
+  }
+  
+  if (gameState.player.isAnchored) {
+    console.log('Key up ignored - player is anchored');
+    return;
+  }
+  
   console.log('Key up event fired:', e.code);
   
-  // Always track key state regardless of player state
   switch (e.code) {
     case 'KeyW':
     case 'ArrowUp':
@@ -153,9 +111,6 @@ export function handleKeyUp(e: KeyboardEvent, gameState: GameState) {
       break;
     case 'KeyI':
       keys.i = false;
-      break;
-    case 'KeyF':
-      keys.f = false;
       break;
   }
 }
@@ -310,10 +265,9 @@ export function updateShipPhysics(gameState: GameState, deltaTime: number) {
     }
   }
   
-  // Use 'F' key to start fishing (handled in the keydown handler)
-  // Start fishing if at rest and F key pressed
-  if (player.speed === 0 && player.isAnchored && keys.f) {
-    keys.f = false; // Prevent multiple activations
+  // Start fishing if at rest and space bar pressed
+  if (player.speed === 0 && player.isAnchored && keys.space) {
+    keys.space = false; // Prevent multiple activations
     player.isFishing = true;
   }
 }
