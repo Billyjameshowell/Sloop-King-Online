@@ -20,16 +20,10 @@ let keys = {
   i: false
 };
 
-// Debug function to test movement
+// Debug function kept for backward compatibility but functionality disabled
 export function debugKeyPress(direction: 'up' | 'down' | 'left' | 'right') {
-  keys[direction] = true;
-  console.log('Debug key activated:', direction, keys);
-  
-  // Release the key after 500ms
-  setTimeout(() => {
-    keys[direction] = false;
-    console.log('Debug key released:', direction, keys);
-  }, 500);
+  // Function is maintained for interface compatibility but doesn't do anything
+  console.log('Debug controls have been disabled');
 }
 
 export function handleKeyDown(e: KeyboardEvent, gameState: GameState) {
