@@ -47,10 +47,10 @@ export function renderIsland(
 
   // Draw the irregular island shape
   if (isHub) {
-    drawIrregularIslandShape(ctx, radius, ISLAND_COLORS.hub.base);
+    drawIrregularIslandShape(ctx, radius, ISLAND_COLORS.hub.base, island);
     ctx.strokeStyle = ISLAND_COLORS.hub.outline;
   } else {
-    drawIrregularIslandShape(ctx, radius, ISLAND_COLORS.regular.base);
+    drawIrregularIslandShape(ctx, radius, ISLAND_COLORS.regular.base, island);
     ctx.strokeStyle = ISLAND_COLORS.regular.outline;
   }
   ctx.lineWidth = 2;
@@ -60,7 +60,7 @@ export function renderIsland(
   if (isHub) {
     renderHubIsland(ctx, size);
   } else {
-    renderRegularIsland(ctx, size);
+    renderRegularIsland(ctx, size, island);
   }
 
   // Draw island name
@@ -75,15 +75,27 @@ export function renderIsland(
 }
 
 /**
+ * Seeded random number generator for consistent island shapes
+ * @param seed A seed value to generate consistent random numbers
+ * @returns A value between 0 and 1
+ */
+function seededRandom(seed: number): number {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+/**
  * Draws an irregular island shape (semi-random perimeter) and fills it
  * @param ctx Canvas context
  * @param radius Island radius
  * @param fillColor Fill color for the island base
+ * @param island Island data to extract a consistent seed from
  */
 function drawIrregularIslandShape(
   ctx: CanvasRenderingContext2D,
   radius: number,
   fillColor: string,
+  island?: Island
 ) {
   ctx.fillStyle = fillColor;
   ctx.beginPath();
@@ -91,8 +103,16 @@ function drawIrregularIslandShape(
   const steps = 24; // number of segments around the island
   for (let i = 0; i < steps; i++) {
     const angle = (Math.PI * 2 * i) / steps;
-    // Slight random offset for the radius
-    const offset = Math.random() * 0.15 * radius;
+    
+    // Use a deterministic seed based on island id and segment
+    let seed = i;
+    if (island) {
+      // Add island ID to make each island unique but consistent
+      seed = i + (island.id * 100);
+    }
+    
+    // Use seeded random for consistent shape across renders
+    const offset = seededRandom(seed) * 0.15 * radius;
     const r = radius - offset;
     const x = r * Math.cos(angle);
     const y = r * Math.sin(angle);
@@ -110,8 +130,9 @@ function drawIrregularIslandShape(
  * Renders a regular (non-hub) island: beach layering + palm trees
  * @param ctx Canvas rendering context
  * @param size Island size
+ * @param island Island data to extract a consistent seed from
  */
-function renderRegularIsland(ctx: CanvasRenderingContext2D, size: number) {
+function renderRegularIsland(ctx: CanvasRenderingContext2D, size: number, island?: Island) {
   const c = ISLAND_COLORS.regular;
 
   // Draw layered beach arcs
@@ -134,9 +155,13 @@ function renderRegularIsland(ctx: CanvasRenderingContext2D, size: number) {
   ctx.fill();
   ctx.restore();
 
-  // Draw palm trees
-  drawDetailedPalmTree(ctx, -size * 0.15, size * 0.1, size * 0.25);
-  drawDetailedPalmTree(ctx, size * 0.15, 0, size * 0.2);
+  // Get island-specific seeds if available
+  const tree1Seed = island ? island.id * 10 + 1 : 1; 
+  const tree2Seed = island ? island.id * 10 + 2 : 2;
+
+  // Draw palm trees at consistent positions
+  drawDetailedPalmTree(ctx, -size * 0.15, size * 0.1, size * 0.25, tree1Seed);
+  drawDetailedPalmTree(ctx, size * 0.15, 0, size * 0.2, tree2Seed);
 }
 
 /**
@@ -145,12 +170,14 @@ function renderRegularIsland(ctx: CanvasRenderingContext2D, size: number) {
  * @param x X-coordinate
  * @param y Y-coordinate
  * @param height Palm tree height
+ * @param treeSeed A seed value to create consistent palm tree shapes
  */
 function drawDetailedPalmTree(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   height: number,
+  treeSeed: number = 0
 ) {
   const c = ISLAND_COLORS.regular;
   const trunkWidth = height * 0.08;
@@ -168,21 +195,27 @@ function drawDetailedPalmTree(
 
   // Two-tone leaves for a simple retro shading
   for (let i = 0; i < frondCount; i++) {
-    const angle = (Math.PI * 2 * i) / frondCount;
+    // Use the tree seed to offset the angle slightly for a unique but consistent tree
+    const angleOffset = seededRandom(treeSeed * 10 + i) * 0.1;
+    const angle = (Math.PI * 2 * i) / frondCount + angleOffset;
     const midAngle = angle + 0.2; // offset for second color
     ctx.save();
 
+    // Slightly vary frond length based on seed
+    const frondLengthVariation = seededRandom(treeSeed * 20 + i) * 0.2 + 0.9;
+    const currentFrondLength = frondLength * frondLengthVariation;
+    
     // Draw main frond (darker)
     ctx.fillStyle = c.treeLeavesDark;
     ctx.beginPath();
     ctx.moveTo(x, y - height);
     ctx.lineTo(
-      x + Math.cos(angle) * frondLength,
-      y - height + Math.sin(angle) * frondLength,
+      x + Math.cos(angle) * currentFrondLength,
+      y - height + Math.sin(angle) * currentFrondLength,
     );
     ctx.lineTo(
-      x + Math.cos(angle + 0.15) * (frondLength * 0.7),
-      y - height + Math.sin(angle + 0.15) * (frondLength * 0.7),
+      x + Math.cos(angle + 0.15) * (currentFrondLength * 0.7),
+      y - height + Math.sin(angle + 0.15) * (currentFrondLength * 0.7),
     );
     ctx.closePath();
     ctx.fill();
@@ -192,12 +225,12 @@ function drawDetailedPalmTree(
     ctx.beginPath();
     ctx.moveTo(x, y - height);
     ctx.lineTo(
-      x + Math.cos(midAngle) * (frondLength * 0.8),
-      y - height + Math.sin(midAngle) * (frondLength * 0.8),
+      x + Math.cos(midAngle) * (currentFrondLength * 0.8),
+      y - height + Math.sin(midAngle) * (currentFrondLength * 0.8),
     );
     ctx.lineTo(
-      x + Math.cos(midAngle + 0.15) * (frondLength * 0.5),
-      y - height + Math.sin(midAngle + 0.15) * (frondLength * 0.5),
+      x + Math.cos(midAngle + 0.15) * (currentFrondLength * 0.5),
+      y - height + Math.sin(midAngle + 0.15) * (currentFrondLength * 0.5),
     );
     ctx.closePath();
     ctx.fill();
