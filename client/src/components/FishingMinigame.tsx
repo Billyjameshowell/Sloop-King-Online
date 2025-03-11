@@ -140,7 +140,28 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
             <>
               <button 
                 className="pixel-btn bg-red-500 text-white px-6 py-3 font-pixel text-md"
-                onClick={() => resetGame()}
+                onClick={() => {
+                  // Show a release confirmation message
+                  const releaseElement = document.createElement('div');
+                  releaseElement.textContent = `You released the ${fishSpecies.name} back into the sea!`;
+                  releaseElement.style.position = 'fixed';
+                  releaseElement.style.top = '50%';
+                  releaseElement.style.left = '50%';
+                  releaseElement.style.transform = 'translate(-50%, -50%)';
+                  releaseElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                  releaseElement.style.color = 'white';
+                  releaseElement.style.padding = '1rem';
+                  releaseElement.style.borderRadius = '0.5rem';
+                  releaseElement.style.fontFamily = 'pixel';
+                  releaseElement.style.zIndex = '100';
+                  document.body.appendChild(releaseElement);
+                  
+                  // Reset game and remove the message after a brief delay
+                  setTimeout(() => {
+                    document.body.removeChild(releaseElement);
+                    resetGame();
+                  }, 1500);
+                }}
               >
                 RELEASE
               </button>
@@ -150,7 +171,27 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
                   // Capture the current fishSpecies.id and fishSize before they might change
                   const currentFishId = fishSpecies.id;
                   const currentFishSize = fishSize;
-                  onCatch(currentFishId, currentFishSize);
+                  
+                  // Call onCatch but first show a brief confirmation message
+                  const fishElement = document.createElement('div');
+                  fishElement.textContent = `You kept a ${fishSpecies.name} (${fishSize}cm)!`;
+                  fishElement.style.position = 'fixed';
+                  fishElement.style.top = '50%';
+                  fishElement.style.left = '50%';
+                  fishElement.style.transform = 'translate(-50%, -50%)';
+                  fishElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                  fishElement.style.color = 'white';
+                  fishElement.style.padding = '1rem';
+                  fishElement.style.borderRadius = '0.5rem';
+                  fishElement.style.fontFamily = 'pixel';
+                  fishElement.style.zIndex = '100';
+                  document.body.appendChild(fishElement);
+                  
+                  // Call onCatch and remove the message after a brief delay
+                  setTimeout(() => {
+                    document.body.removeChild(fishElement);
+                    onCatch(currentFishId, currentFishSize);
+                  }, 1500);
                 }}
               >
                 KEEP
