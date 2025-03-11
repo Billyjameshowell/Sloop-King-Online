@@ -25,7 +25,32 @@ export function useFishing() {
   const [isActive, setIsActive] = useState<boolean>(true);
   const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
   const animationRef = useRef<number | null>(null);
-  const lastTimeRef = useRef<number>(0);
+  const directionRef = useRef<1 | -1>(1);
+  
+  // Simple animation function that moves the indicator back and forth
+  const animate = useCallback(() => {
+    if (!isActive) return;
+    
+    const gaugeWidth = 256;
+    const indicatorWidth = 4;
+    
+    // Update position based on current direction
+    let newPos = indicatorPosition + (directionRef.current * 5);
+    
+    // Change direction if hitting boundaries
+    if (newPos >= gaugeWidth - indicatorWidth) {
+      directionRef.current = -1;
+      newPos = gaugeWidth - indicatorWidth;
+    } else if (newPos <= 0) {
+      directionRef.current = 1;
+      newPos = 0;
+    }
+    
+    setIndicatorPosition(newPos);
+    
+    // Continue animation
+    animationRef.current = requestAnimationFrame(animate);
+  }, [indicatorPosition, isActive]);
   
   // Initialize fishing minigame
   useEffect(() => {
@@ -59,52 +84,19 @@ export function useFishing() {
     );
     setIndicatorSpeed(speed);
     
-    // Reset indicator position
+    // Reset indicator position and direction
     setIndicatorPosition(0);
-    setIndicatorDirection(1);
+    directionRef.current = 1;
     
     // Start animation
-    lastTimeRef.current = performance.now();
-    animationRef.current = requestAnimationFrame(updateIndicator);
+    animationRef.current = requestAnimationFrame(animate);
     
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [allFishSpecies]);
-  
-  // Update indicator position
-  const updateIndicator = useCallback((time: number) => {
-    if (!isActive) return;
-    
-    const deltaTime = time - lastTimeRef.current;
-    lastTimeRef.current = time;
-    
-    // Calculate new position
-    const gaugeWidth = 256; 
-    const indicatorWidth = 4; // Width of the indicator element (4px)
-    
-    setIndicatorPosition(prev => {
-      // Calculate projected position
-      let newPos = prev + (indicatorDirection * indicatorSpeed * deltaTime / 1000);
-      
-      // Check boundaries and change direction
-      if (newPos >= gaugeWidth - indicatorWidth) {
-        // Hit right boundary, reverse direction
-        setIndicatorDirection(-1);
-        newPos = gaugeWidth - indicatorWidth; // Set at boundary
-      } else if (newPos <= 0) {
-        // Hit left boundary, reverse direction
-        setIndicatorDirection(1);
-        newPos = 0; // Set at boundary
-      }
-      
-      return newPos;
-    });
-    
-    animationRef.current = requestAnimationFrame(updateIndicator);
-  }, [indicatorDirection, indicatorSpeed, isActive]);
+  }, [allFishSpecies, animate]);
   
   // Handle catch attempt
   const handleCatchAttempt = useCallback(() => {
@@ -158,7 +150,7 @@ export function useFishing() {
     setHitZonePosition(hitPosition);
     setHitZoneWidth(hitZoneSize);
     
-    // Set indicator speed
+    // Set indicator speed (not used in simplified implementation)
     const speed = Math.floor(
       Math.random() * (params.maxSpeed - params.minSpeed) + params.minSpeed
     );
@@ -166,12 +158,11 @@ export function useFishing() {
     
     // Reset indicator position
     setIndicatorPosition(0);
-    setIndicatorDirection(1);
+    directionRef.current = 1;
     
     // Start animation
-    lastTimeRef.current = performance.now();
-    animationRef.current = requestAnimationFrame(updateIndicator);
-  }, [allFishSpecies, updateIndicator]);
+    animationRef.current = requestAnimationFrame(animate);
+  }, [allFishSpecies, animate]);
   
   return {
     fishSpecies,
