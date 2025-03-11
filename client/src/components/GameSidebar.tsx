@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { GameState } from '@shared/schema';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import FishingLog from '@/components/FishingLog';
+import { FishingLogEntry } from '@/hooks/useFishingLog';
 
 interface GameSidebarProps {
   gameState: GameState;
@@ -8,6 +10,7 @@ interface GameSidebarProps {
   onDropAnchor: () => void;
   onReturnToHub: () => void;
   onOpenMap: () => void;
+  fishingLogEntries?: FishingLogEntry[];
 }
 
 export default function GameSidebar({ 
@@ -15,7 +18,8 @@ export default function GameSidebar({
   onStartFishing, 
   onDropAnchor, 
   onReturnToHub, 
-  onOpenMap 
+  onOpenMap,
+  fishingLogEntries = []
 }: GameSidebarProps) {
   const [mapOpen, setMapOpen] = useState(false);
   
@@ -45,6 +49,14 @@ export default function GameSidebar({
             <span>Rare Finds:</span>
             <span>{gameState.player.stats.rareFinds}</span>
           </div>
+        </div>
+      </div>
+      
+      {/* Fishing Log */}
+      <div className="mb-6">
+        <h3 className="font-pixel text-sand-yellow mb-2 text-sm">FISHING LOG</h3>
+        <div className="bg-gray-700 p-2 rounded pixel-border">
+          <FishingLog entries={fishingLogEntries} />
         </div>
       </div>
       
