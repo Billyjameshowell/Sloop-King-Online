@@ -101,27 +101,46 @@ function drawIrregularIslandShape(
   ctx.beginPath();
 
   const steps = 24; // number of segments around the island
-  for (let i = 0; i < steps; i++) {
-    const angle = (Math.PI * 2 * i) / steps;
-    
-    // Use a deterministic seed based on island id and segment
-    let seed = i;
-    if (island) {
-      // Add island ID to make each island unique but consistent
-      seed = i + (island.id * 100);
+  
+  // Different approaches for hub vs regular islands
+  const isHub = island && island.isHub;
+  
+  // Use a deterministic path generation approach
+  if (isHub) {
+    // Hub islands have more regular shapes with subtle variations
+    for (let i = 0; i < steps; i++) {
+      const angle = (Math.PI * 2 * i) / steps;
+      
+      // Use island ID as part of the seed for consistent but unique shapes
+      const seed = i + (island.id * 100);
+      const offset = seededRandom(seed) * 0.1 * radius; // Less variation for hub
+      const r = radius - offset;
+      
+      const x = r * Math.cos(angle);
+      const y = r * Math.sin(angle);
+      
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
-    
-    // Use seeded random for consistent shape across renders
-    const offset = seededRandom(seed) * 0.15 * radius;
-    const r = radius - offset;
-    const x = r * Math.cos(angle);
-    const y = r * Math.sin(angle);
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
+  } else {
+    // Regular islands have perfect circular shapes with layered beaches
+    // This ensures the black outline is perfectly circular
+    for (let i = 0; i < steps; i++) {
+      const angle = (Math.PI * 2 * i) / steps;
+      const x = radius * Math.cos(angle);
+      const y = radius * Math.sin(angle);
+      
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
   }
+  
   ctx.closePath();
   ctx.fill();
 }
