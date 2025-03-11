@@ -127,8 +127,8 @@ export default function GameContainer({
         {/* Fishing Minigame (conditionally rendered) */}
         {gameState.player.isFishing && (
           <FishingMinigame
-            onCancel={onEndFishing}
-            onCatch={onCatchFish}
+            onCancel={handleEndFishing}
+            onCatch={handleCatchFish}
           />
         )}
       </main>
@@ -136,10 +136,11 @@ export default function GameContainer({
       {/* Game Sidebar */}
       <GameSidebar
         gameState={gameState}
-        onStartFishing={onStartFishing}
+        onStartFishing={handleStartFishing}
         onDropAnchor={onDropAnchor}
         onReturnToHub={onReturnToHub}
         onOpenMap={onOpenMap}
+        fishingLogEntries={logEntries}
       />
     </div>
   );

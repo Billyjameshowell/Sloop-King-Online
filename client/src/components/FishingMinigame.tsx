@@ -156,10 +156,11 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
                   releaseElement.style.zIndex = '100';
                   document.body.appendChild(releaseElement);
                   
-                  // Reset game and remove the message after a brief delay
+                  // Remove the message and exit fishing minigame after a brief delay
                   setTimeout(() => {
                     document.body.removeChild(releaseElement);
                     resetGame();
+                    onCancel(); // Exit fishing minigame after releasing
                   }, 1500);
                 }}
               >
@@ -187,10 +188,11 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
                   fishElement.style.zIndex = '100';
                   document.body.appendChild(fishElement);
                   
-                  // Call onCatch and remove the message after a brief delay
+                  // Call onCatch, remove message, and exit fishing minigame after a brief delay
                   setTimeout(() => {
                     document.body.removeChild(fishElement);
                     onCatch(currentFishId, currentFishSize);
+                    onCancel(); // Exit fishing minigame after keeping the fish
                   }, 1500);
                 }}
               >
