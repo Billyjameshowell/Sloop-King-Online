@@ -3,6 +3,7 @@ import { GameState } from '@shared/schema';
 import GameCanvas from '@/components/GameCanvas';
 import GameSidebar from '@/components/GameSidebar';
 import FishingMinigame from '@/components/FishingMinigame';
+import { useFishingLog, FishingLogEntry } from '@/hooks/useFishingLog';
 
 interface GameContainerProps {
   gameState: GameState;
@@ -24,6 +25,7 @@ export default function GameContainer({
   onOpenMap
 }: GameContainerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { logEntries, addLogEntry } = useFishingLog(10);
 
   // Focus the canvas element on load for keyboard controls
   useEffect(() => {
@@ -31,6 +33,31 @@ export default function GameContainer({
       canvasRef.current.focus();
     }
   }, []);
+  
+  // Wrapper functions to add log entries for fishing actions
+  const handleStartFishing = () => {
+    addLogEntry("Started fishing...", "info");
+    onStartFishing();
+  };
+  
+  const handleEndFishing = () => {
+    addLogEntry("Ended fishing session.", "info");
+    onEndFishing();
+  };
+  
+  const handleCatchFish = (fishSpeciesId: number, size: number) => {
+    // Find the fish species in the player's catches
+    const fishSpecies = gameState.collection.catches.find(c => c.species.id === fishSpeciesId)?.species;
+    
+    if (fishSpecies) {
+      addLogEntry(`Caught a ${fishSpecies.name} (${size}cm)!`, "catch");
+    } else {
+      // Fallback if we can't find the species
+      addLogEntry(`Caught a fish (${size}cm)!`, "catch");
+    }
+    
+    onCatchFish(fishSpeciesId, size);
+  };
   
   return (
     <div className="game-container flex flex-1 overflow-hidden">
