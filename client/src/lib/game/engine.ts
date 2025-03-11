@@ -272,6 +272,11 @@ export function updateShipPhysics(gameState: GameState, deltaTime: number) {
   }
 }
 
+// Track last position to determine if redraw is needed
+let lastPlayerPosition = { x: 0, y: 0 };
+let lastCameraPosition = { x: 0, y: 0 };
+let forceRedraw = true;
+
 export function renderWorld(
   ctx: CanvasRenderingContext2D, 
   gameState: GameState, 
@@ -284,14 +289,31 @@ export function renderWorld(
   const cameraX = ctx.canvas.width / 2 - gameState.player.position.x;
   const cameraY = ctx.canvas.height / 2 - gameState.player.position.y;
   
-  // Clear canvas
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  // Check if player has moved enough to warrant a redraw
+  const playerMoved = Math.abs(lastPlayerPosition.x - gameState.player.position.x) > 0.5 || 
+                      Math.abs(lastPlayerPosition.y - gameState.player.position.y) > 0.5;
+                      
+  const cameraMoved = Math.abs(lastCameraPosition.x - cameraX) > 0.5 || 
+                      Math.abs(lastCameraPosition.y - cameraY) > 0.5;
   
-  // Render water background
-  renderWater(ctx, gameState, cameraX, cameraY, deltaTime);
-  
-  // Render islands
-  renderIslands(ctx, gameState, cameraX, cameraY);
+  // Only redraw if something has changed or we're forcing a redraw
+  if (playerMoved || cameraMoved || forceRedraw || gameState.player.isMoving) {
+    // Clear canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+    // Render water background
+    renderWater(ctx, gameState, cameraX, cameraY, deltaTime);
+    
+    // Render islands
+    renderIslands(ctx, gameState, cameraX, cameraY);
+    
+    // Update tracking variables
+    lastPlayerPosition = { ...gameState.player.position };
+    lastCameraPosition = { x: cameraX, y: cameraY };
+    
+    // First frame after forced redraw is done
+    forceRedraw = false;
+  }
   
   // Render destination marker if there is one
   if (gameState.player.destination && !gameState.player.isAnchored) {

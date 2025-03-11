@@ -57,6 +57,9 @@ export function renderWater(
   }
 }
 
+// Keep track of the last render positions to avoid unnecessary re-renders
+let lastIslandRenders = new Map();
+
 export function renderIslands(
   ctx: CanvasRenderingContext2D,
   gameState: GameState,
@@ -79,8 +82,19 @@ export function renderIslands(
       return;
     }
     
-    // Use the renderIsland function from island.ts
-    renderIsland(ctx, island, screenX, screenY);
+    // Check if island position has changed significantly since last render
+    const lastRender = lastIslandRenders.get(island.id);
+    const hasChanged = !lastRender || 
+                        Math.abs(lastRender.x - screenX) > 0.5 || 
+                        Math.abs(lastRender.y - screenY) > 0.5;
+    
+    if (hasChanged) {
+      // Use the renderIsland function from island.ts
+      renderIsland(ctx, island, screenX, screenY);
+      
+      // Update last render position
+      lastIslandRenders.set(island.id, { x: screenX, y: screenY });
+    }
   });
 }
 
