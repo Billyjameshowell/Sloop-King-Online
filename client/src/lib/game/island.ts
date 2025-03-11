@@ -79,28 +79,58 @@ function renderRegularIsland(
 ) {
   const colors = ISLAND_COLORS.regular;
   
-  // Draw trees
-  // Tree 1
-  ctx.fillStyle = colors.tree_trunk;
-  ctx.fillRect(-size * 0.1, -size * 0.2, size * 0.05, size * 0.2);
-  ctx.strokeRect(-size * 0.1, -size * 0.2, size * 0.05, size * 0.2);
+  // Draw palm trees
+  // Palm Tree 1
+  const drawPalmTree = (x: number, y: number, height: number, scale: number) => {
+    // Tapered trunk
+    ctx.fillStyle = colors.tree_trunk;
+    ctx.beginPath();
+    ctx.moveTo(x - scale * 0.03 * size, y);
+    ctx.lineTo(x + scale * 0.03 * size, y);
+    ctx.lineTo(x + scale * 0.02 * size, y - height);
+    ctx.lineTo(x - scale * 0.02 * size, y - height);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    
+    // Palm leaves (5-7 fronds spreading outward)
+    ctx.fillStyle = colors.tree_leaves;
+    
+    // Draw palm fronds in different directions
+    for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 3) {
+      ctx.beginPath();
+      ctx.moveTo(x, y - height);
+      
+      // Create curved palm frond
+      ctx.quadraticCurveTo(
+        x + Math.cos(angle) * scale * 0.1 * size,
+        y - height + Math.sin(angle) * scale * 0.1 * size,
+        x + Math.cos(angle) * scale * 0.2 * size,
+        y - height + Math.sin(angle) * scale * 0.05 * size
+      );
+      
+      // Make frond wider at the end
+      ctx.lineTo(
+        x + Math.cos(angle) * scale * 0.22 * size,
+        y - height + Math.sin(angle) * scale * 0.08 * size
+      );
+      
+      // Return to trunk
+      ctx.quadraticCurveTo(
+        x + Math.cos(angle) * scale * 0.12 * size,
+        y - height + Math.sin(angle) * scale * 0.12 * size,
+        x, y - height
+      );
+      
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  };
   
-  ctx.fillStyle = colors.tree_leaves;
-  ctx.beginPath();
-  ctx.arc(-size * 0.075, -size * 0.25, size * 0.1, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-  
-  // Tree 2
-  ctx.fillStyle = colors.tree_trunk;
-  ctx.fillRect(size * 0.15, -size * 0.15, size * 0.05, size * 0.15);
-  ctx.strokeRect(size * 0.15, -size * 0.15, size * 0.05, size * 0.15);
-  
-  ctx.fillStyle = colors.tree_leaves;
-  ctx.beginPath();
-  ctx.arc(size * 0.175, -size * 0.2, size * 0.08, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
+  // Draw two palm trees
+  drawPalmTree(-size * 0.1, size * 0, size * 0.3, 1.2);
+  drawPalmTree(size * 0.15, size * 0.05, size * 0.25, 1);
   
   // Beach area
   ctx.fillStyle = colors.beach;
