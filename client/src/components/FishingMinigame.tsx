@@ -141,27 +141,9 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
               <button 
                 className="pixel-btn bg-red-500 text-white px-6 py-3 font-pixel text-md"
                 onClick={() => {
-                  // Show a release confirmation message
-                  const releaseElement = document.createElement('div');
-                  releaseElement.textContent = `You released the ${fishSpecies.name} back into the sea!`;
-                  releaseElement.style.position = 'fixed';
-                  releaseElement.style.top = '50%';
-                  releaseElement.style.left = '50%';
-                  releaseElement.style.transform = 'translate(-50%, -50%)';
-                  releaseElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                  releaseElement.style.color = 'white';
-                  releaseElement.style.padding = '1rem';
-                  releaseElement.style.borderRadius = '0.5rem';
-                  releaseElement.style.fontFamily = 'pixel';
-                  releaseElement.style.zIndex = '100';
-                  document.body.appendChild(releaseElement);
-                  
-                  // Remove the message and exit fishing minigame after a brief delay
-                  setTimeout(() => {
-                    document.body.removeChild(releaseElement);
-                    resetGame();
-                    onCancel(); // Exit fishing minigame after releasing
-                  }, 1500);
+                  // Simply reset the game and exit fishing minigame
+                  resetGame();
+                  onCancel(); // Exit fishing minigame after releasing
                 }}
               >
                 RELEASE
@@ -173,27 +155,9 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
                   const currentFishId = fishSpecies.id;
                   const currentFishSize = fishSize;
                   
-                  // Call onCatch but first show a brief confirmation message
-                  const fishElement = document.createElement('div');
-                  fishElement.textContent = `You kept a ${fishSpecies.name} (${fishSize}cm)!`;
-                  fishElement.style.position = 'fixed';
-                  fishElement.style.top = '50%';
-                  fishElement.style.left = '50%';
-                  fishElement.style.transform = 'translate(-50%, -50%)';
-                  fishElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                  fishElement.style.color = 'white';
-                  fishElement.style.padding = '1rem';
-                  fishElement.style.borderRadius = '0.5rem';
-                  fishElement.style.fontFamily = 'pixel';
-                  fishElement.style.zIndex = '100';
-                  document.body.appendChild(fishElement);
-                  
-                  // Call onCatch, remove message, and exit fishing minigame after a brief delay
-                  setTimeout(() => {
-                    document.body.removeChild(fishElement);
-                    onCatch(currentFishId, currentFishSize);
-                    onCancel(); // Exit fishing minigame after keeping the fish
-                  }, 1500);
+                  // Call onCatch and exit fishing minigame immediately
+                  onCatch(currentFishId, currentFishSize);
+                  onCancel(); // Exit fishing minigame after keeping the fish
                 }}
               >
                 KEEP
