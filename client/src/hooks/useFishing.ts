@@ -27,6 +27,33 @@ export function useFishing() {
   const animationRef = useRef<number | null>(null);
   const movingRightRef = useRef<boolean>(true);
   const speedRef = useRef<number>(3);
+  
+  // Reference to gauge container element to measure actual width
+  const gaugeRef = useRef<HTMLDivElement | null>(null);
+  
+  // Store the actual container width for calculations
+  const containerWidthRef = useRef<number>(400); // Default width
+
+  // Update container width measurement
+  useEffect(() => {
+    const updateContainerWidth = () => {
+      // Use the actual width of the gauge container from DOM if available
+      if (gaugeRef.current) {
+        containerWidthRef.current = gaugeRef.current.offsetWidth;
+        console.log('Gauge container width measured:', containerWidthRef.current);
+      }
+    };
+
+    // Initial measurement
+    updateContainerWidth();
+    
+    // Update on window resize
+    window.addEventListener('resize', updateContainerWidth);
+    
+    return () => {
+      window.removeEventListener('resize', updateContainerWidth);
+    };
+  }, []);
 
   // Initialize fishing minigame
   useEffect(() => {
@@ -70,7 +97,8 @@ export function useFishing() {
     function moveIndicator() {
       if (!isActive) return;
 
-      const gaugeWidth = 256;
+      // Use the full width of the container instead of hardcoded value
+      const gaugeWidth = containerWidthRef.current;
       const indicatorWidth = 4;
 
       setIndicatorPosition((prev) => {
@@ -180,7 +208,8 @@ export function useFishing() {
     function moveIndicator() {
       if (!isActive) return;
 
-      const gaugeWidth = 256;
+      // Use the full width of the container instead of hardcoded value
+      const gaugeWidth = containerWidthRef.current;
       const indicatorWidth = 4;
 
       setIndicatorPosition((prev) => {
@@ -219,5 +248,6 @@ export function useFishing() {
     isSuccess,
     handleCatchAttempt,
     resetGame,
+    gaugeRef, // Expose the ref so components can attach it
   };
 }

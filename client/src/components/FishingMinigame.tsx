@@ -48,7 +48,10 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
         <h3 className="font-pixel text-center mb-6 text-sand-yellow text-xl uppercase tracking-wide">FISHING!</h3>
         
         {/* Fishing gauge */}
-        <div className="w-full h-10 bg-gray-700 relative mb-6 pixel-border overflow-hidden">
+        <div 
+          ref={fishingUtils.gaugeRef}
+          className="w-full h-10 bg-gray-700 relative mb-6 pixel-border overflow-hidden"
+        >
           {/* Success zone */}
           <div 
             className={`fish-hit-area absolute h-full ${isSuccess !== null ? (isSuccess ? 'bg-green-500' : 'bg-red-500') : 'bg-green-500 bg-opacity-50'}`}
