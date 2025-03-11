@@ -146,7 +146,12 @@ export default function FishingMinigame({ onCancel, onCatch }: FishingMinigamePr
               </button>
               <button 
                 className="pixel-btn bg-green-500 text-white px-6 py-3 font-pixel text-md"
-                onClick={() => onCatch(fishSpecies.id, fishSize)}
+                onClick={() => {
+                  // Capture the current fishSpecies.id and fishSize before they might change
+                  const currentFishId = fishSpecies.id;
+                  const currentFishSize = fishSize;
+                  onCatch(currentFishId, currentFishSize);
+                }}
               >
                 KEEP
               </button>

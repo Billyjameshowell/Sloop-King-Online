@@ -170,39 +170,42 @@ export function useFishing() {
     setIsSuccess(null);
     setIsActive(true);
 
-    // Pick a new fish
-    const selectedFish = pickRandomFishSpecies(allFishSpecies);
-    setFishSpecies(selectedFish);
+    // Wait for next tick to ensure any current catch operation completes first
+    setTimeout(() => {
+      // Pick a new fish
+      const selectedFish = pickRandomFishSpecies(allFishSpecies);
+      setFishSpecies(selectedFish);
 
-    // Generate a new fish size
-    const size = generateFishSize(selectedFish);
-    setFishSize(size);
+      // Generate a new fish size
+      const size = generateFishSize(selectedFish);
+      setFishSize(size);
 
-    // Get fishing parameters based on rarity
-    const params = getFishingParams(selectedFish.rarity);
+      // Get fishing parameters based on rarity
+      const params = getFishingParams(selectedFish.rarity);
 
-    // Set hit zone size and position
-    const hitZoneSize = Math.floor(
-      (params.gaugeWidth *
-        (Math.random() * (params.maxHitPercentage - params.minHitPercentage) +
-          params.minHitPercentage)) /
-        100,
-    );
-    const maxPosition = params.gaugeWidth - hitZoneSize;
-    const hitPosition = Math.floor(Math.random() * maxPosition);
+      // Set hit zone size and position
+      const hitZoneSize = Math.floor(
+        (params.gaugeWidth *
+          (Math.random() * (params.maxHitPercentage - params.minHitPercentage) +
+            params.minHitPercentage)) /
+          100,
+      );
+      const maxPosition = params.gaugeWidth - hitZoneSize;
+      const hitPosition = Math.floor(Math.random() * maxPosition);
 
-    setHitZonePosition(hitPosition);
-    setHitZoneWidth(hitZoneSize);
+      setHitZonePosition(hitPosition);
+      setHitZoneWidth(hitZoneSize);
 
-    // Set indicator speed
-    const speed = Math.floor(
-      Math.random() * (params.maxSpeed - params.minSpeed) + params.minSpeed,
-    );
-    speedRef.current = Math.max(3, Math.floor(speed / 45));
+      // Set indicator speed
+      const speed = Math.floor(
+        Math.random() * (params.maxSpeed - params.minSpeed) + params.minSpeed,
+      );
+      speedRef.current = Math.max(3, Math.floor(speed / 45));
 
-    // Reset indicator position
-    setIndicatorPosition(0);
-    movingRightRef.current = true;
+      // Reset indicator position
+      setIndicatorPosition(0);
+      movingRightRef.current = true;
+    }, 0);
 
     // Animation function that will be called repeatedly
     function moveIndicator() {
